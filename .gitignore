@@ -10,6 +10,7 @@ bin-release/
 *.swo
 .rvmrc
 *.swf
+*.swc
 .buildNumber
 .externalToolBuilders
 

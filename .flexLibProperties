@@ -18,6 +18,10 @@
     <classEntry path="com.core.messageBus.MessageError"/>
     <classEntry path="com.core.messageBus.MessageBase"/>
     <classEntry path="com.core.messageBus.MessageBus"/>
+    <classEntry path="engine.Engine"/>
+    <classEntry path="engine.RootDisplay"/>
+    <classEntry path="engine.StarlingDisplay"/>
+    <classEntry path="engine.EngineError"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
