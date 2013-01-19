@@ -1,0 +1,7 @@
+.DS_Store
+*.swp
+*.swo
+.rvmrc
+*.swf
+.buildNumber
+.externalToolBuilders

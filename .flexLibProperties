@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.core.scene.SceneBase"/>
+    <classEntry path="com.core.scene.SceneManager"/>
+    <classEntry path="com.core.scene.IScene"/>
+    <classEntry path="com.core.scene.ControllerBase"/>
+    <classEntry path="com.core.scene.IController"/>
+    <classEntry path="com.core.scene.SceneError"/>
+    <classEntry path="com.core.scene.IHud"/>
+    <classEntry path="com.core.scene.SceneMessage"/>
+    <classEntry path="com.core.dataStructures.Set"/>
+    <classEntry path="com.core.dataStructures.Hash"/>
+    <classEntry path="com.core.dataStructures.Array2D"/>
+    <classEntry path="com.core.error.ErrorBase"/>
+    <classEntry path="com.core.fsm.StateMachine"/>
+    <classEntry path="com.core.fsm.FsmError"/>
+    <classEntry path="com.core.messageBus.MessageError"/>
+    <classEntry path="com.core.messageBus.MessageBase"/>
+    <classEntry path="com.core.messageBus.MessageBus"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
