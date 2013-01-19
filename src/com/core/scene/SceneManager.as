@@ -3,6 +3,7 @@ package com.core.scene
   import avmplus.getQualifiedClassName;
 
   import com.core.messageBus.MessageBus;
+  import com.engine.RootDisplay;
 
   import flash.events.EventDispatcher;
   import flash.geom.Rectangle;
@@ -18,6 +19,7 @@ package com.core.scene
     // Instance variables.
     //
 
+    private var _rootDisplay:RootDisplay;
     private var _scene:IScene;
     private var _controller:IController;
     private var _hud:IHud;
@@ -28,7 +30,9 @@ package com.core.scene
     // Constructors.
     //
 
-    public function SceneManager() {
+    public function SceneManager(rootDisplay:RootDisplay) {
+      _rootDisplay = rootDisplay;
+
       register();
     }
 
