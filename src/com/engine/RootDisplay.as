@@ -57,8 +57,8 @@ package com.engine
     private function configure(opts:Object):void {
       _opts = opts ? opts : {};
 
-      if(!_opts.hasOwnProperty('render_mode')) opts.render_mode = DEFAULT_RENDER_MODE;
-      if(!_opts.hasOwnProperty('antialiasing')) opts.render_mode = DEFAULT_ANTIALIAS_SETTING;
+      if(!_opts.hasOwnProperty('render_mode')) _opts.render_mode = DEFAULT_RENDER_MODE;
+      if(!_opts.hasOwnProperty('antialiasing')) _opts.antialiasing = DEFAULT_ANTIALIAS_SETTING;
     }
 
     private function setup():void {

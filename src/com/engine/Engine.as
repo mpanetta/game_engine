@@ -36,13 +36,13 @@ package com.engine
         throw new EngineError(EngineError.ENGINE_INIT);
 
       _instance = new Engine(new SingletonBlocker, options);
-      _instance.startEngine(options);
     }
 
     public static function get instance():Engine {
-      if(_instance) return _instance;
+      if(!_instance)
+        throw new EngineError(EngineError.ENGINE_NOT_INITIALIZED);
 
-      throw new EngineError(EngineError.ENGINE_NOT_INITIALIZED);
+      return _instance;
     }
 
     //
@@ -52,6 +52,10 @@ package com.engine
     //
     // Public methods.
     //
+
+    public function startGame():void {
+      startEngine(_options);
+    }
 
     //
     // Private methods.
