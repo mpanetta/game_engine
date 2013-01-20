@@ -49,6 +49,8 @@ package com.engine
     // Getters and setters.
     //
 
+    public function get sceneManager():SceneManager { return _sceneManager; }
+
     //
     // Public methods.
     //

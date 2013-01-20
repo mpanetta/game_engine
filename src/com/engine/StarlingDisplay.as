@@ -1,5 +1,8 @@
 package com.engine
 {
+  import com.core.scene.IHud;
+  import com.core.scene.IScene;
+
   import flash.events.EventDispatcher;
   import flash.geom.Rectangle;
 
@@ -22,6 +25,8 @@ package com.engine
 
     private var _allowResize:Boolean = true;
     private var _initialized:Boolean = false;
+    private var _sceneLayer:Sprite;
+    private var _hudLayer:Sprite;
 
     //
     // Constructors.
@@ -50,6 +55,22 @@ package com.engine
       _dispatcher.removeEventListener(type, handler)
     }
 
+    public function addScene(scene:IScene):void {
+      _sceneLayer.addChild(scene.starlingView);
+    }
+
+    public function removeScene(scene:IScene):void {
+      _sceneLayer.removeChild(scene.starlingView);
+    }
+
+    public function addHud(hud:IHud):void {
+
+    }
+
+    public function removeHud(hud:IHud):void {
+
+    }
+
     //
     // Private methods.
     //
@@ -61,6 +82,8 @@ package com.engine
       _initialized = true;
 
       stage.addEventListener(ResizeEvent.RESIZE, stage_resize);
+
+      createLayers();
       dispatchInitComplete();
     }
 
@@ -70,6 +93,14 @@ package com.engine
 
       stage.stageWidth = width;
       stage.stageHeight = height;
+    }
+
+    private function createLayers():void {
+      _sceneLayer = new Sprite();
+      _hudLayer = new Sprite();
+
+      addChild(_sceneLayer);
+      addChild(_hudLayer);
     }
 
     private function dispatchInitComplete():void {

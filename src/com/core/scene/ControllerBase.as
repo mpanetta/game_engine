@@ -4,6 +4,7 @@ package com.core.scene
 
   import com.core.error.ErrorBase;
 
+  import flash.display.Scene;
   import flash.events.EventDispatcher;
   import flash.utils.getDefinitionByName;
 
@@ -55,7 +56,9 @@ package com.core.scene
     //
 
     public function initialize(opts:Object):void {
-      throw new ErrorBase(ErrorBase.ABSTRACT_METHOD, "ControllerBase#initialize");
+      sceneFor(className);
+
+      complete();
     }
 
     //
@@ -85,7 +88,7 @@ package com.core.scene
       if(!sceneClass)
         throw new SceneError(SceneError.INVALID_SCENE_CLASS, " for controller class: " + viewClass);
 
-      _scene = sceneClass as IScene;
+      _scene = new sceneClass();
     }
 
 
@@ -97,7 +100,7 @@ package com.core.scene
       else
         base = "::" + viewClass;
 
-      return "controllers" + base.split("Scene")[0] + "Controller";
+      return "com.scenes" + base.split("Controller")[0] + "Scene";
     }
 
 

@@ -71,8 +71,6 @@ package com.engine
 
       Starling.current.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
 
-
-
       _flashDisplay = (starling as Starling).nativeOverlay;
     }
 

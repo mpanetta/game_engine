@@ -24,7 +24,7 @@ package com.core.scene
     private var _controller:IController;
     private var _hud:IHud;
     private var _changing:Boolean;
-    private var _scenes:Vector.<IScene> = new Vector.<IScene>;
+    private var _scenes:Vector.<Object> = new Vector.<Object>;
 
     //
     // Constructors.
@@ -61,7 +61,7 @@ package com.core.scene
       if(_scene)
         removeCurrentScene();
 
-      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH));
+      addScene(controller, opts);
     }
 
     //
@@ -104,6 +104,7 @@ package com.core.scene
     }
 
     private function removeCurrentScene():void {
+      _rootDisplay.starlingDisplay.removeScene(_scene);
       _scene.dispose();
       _controller.dispose();
     }
@@ -111,9 +112,15 @@ package com.core.scene
     private function addScene(controller:IController, opts:Object):void {
       _controller = controller;
 
-
       _controller.addEventListener(SceneMessage.SCENE_CONTROLLER_PRELOADED, controller_sceneControllerPreloaded);
       _controller.initialize(opts);
+    }
+
+    private function setScene(scene:IScene):void {
+      _scene = scene;
+
+      _rootDisplay.starlingDisplay.addScene(_scene);
+      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH));
     }
 
     private function resize(rect:Rectangle):void {
@@ -129,7 +136,7 @@ package com.core.scene
     }
 
     private function controller_sceneControllerPreloaded(message:SceneMessage):void {
-
+      setScene(message.scene);
     }
   }
 }

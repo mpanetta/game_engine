@@ -31,6 +31,8 @@ package com.core.scene
     // Getters and setters.
     //
 
+    public function get scene():IScene { return data.scene; }
+
     //
     // Public methods.
     //

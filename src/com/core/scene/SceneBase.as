@@ -3,6 +3,8 @@ package com.core.scene
   import flash.events.EventDispatcher;
   import flash.geom.Rectangle;
 
+  import starling.display.Sprite;
+
   public class SceneBase extends EventDispatcher implements IScene
   {
     //
@@ -17,6 +19,7 @@ package com.core.scene
 
     private var _disposed:Boolean = false;
     private var _data:Object;
+    private var _starlingView:Sprite;
 
     //
     // Constructors.
@@ -24,6 +27,7 @@ package com.core.scene
 
     public function SceneBase() {
       _count++;
+      _starlingView = new Sprite();
 
       register();
     }
@@ -40,6 +44,7 @@ package com.core.scene
     //
 
     public function get disposed():Boolean { return _disposed; }
+    public function get starlingView():Sprite { return _starlingView; }
 
     //
     // Public methods.
