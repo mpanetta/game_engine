@@ -3,6 +3,7 @@ package com.core.scene
   import avmplus.getQualifiedClassName;
 
   import com.core.error.ErrorBase;
+  import com.core.operationQueue.OperationQueue;
 
   import flash.display.Scene;
   import flash.events.EventDispatcher;
@@ -20,9 +21,10 @@ package com.core.scene
 
     private static var _count:int = 0;
 
-    private var _disposed:Boolean = false;
-    private var _scene:IScene;
     private var _initialized:Boolean = false;
+    private var _disposed:Boolean = false;
+    private var _data:Object;
+    private var _scene:IScene;
 
     //
     // Constructors.
@@ -55,15 +57,20 @@ package com.core.scene
     // Public methods.
     //
 
-    public function initialize(opts:Object):void {
-      sceneFor(className);
+    public function initialize(data:Object):void {
+      _data = data;
 
-      complete();
+      sceneFor(className);
+      startPreloadQueue();
     }
 
     //
     // Protected methods.
     //
+
+    protected function startPreloadQueue():void {
+      throw new ErrorBase(ErrorBase.ABSTRACT_METHOD, "ControllerBase::startPreloadQueue");
+    }
 
     protected function complete():void {
       dispatchEvent(new SceneMessage(SceneMessage.SCENE_CONTROLLER_PRELOADED, { scene:_scene }));
@@ -88,7 +95,7 @@ package com.core.scene
       if(!sceneClass)
         throw new SceneError(SceneError.INVALID_SCENE_CLASS, " for controller class: " + viewClass);
 
-      _scene = new sceneClass();
+      _scene = new sceneClass(_data);
     }
 
 

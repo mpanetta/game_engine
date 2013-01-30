@@ -105,6 +105,8 @@ package com.core.scene
 
     private function removeCurrentScene():void {
       _rootDisplay.starlingDisplay.removeScene(_scene);
+
+      _scene.removeEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish);
       _scene.dispose();
       _controller.dispose();
     }
@@ -118,9 +120,9 @@ package com.core.scene
 
     private function setScene(scene:IScene):void {
       _scene = scene;
+      _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish);
 
       _rootDisplay.starlingDisplay.addScene(_scene);
-      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH));
     }
 
     private function resize(rect:Rectangle):void {
@@ -137,6 +139,10 @@ package com.core.scene
 
     private function controller_sceneControllerPreloaded(message:SceneMessage):void {
       setScene(message.scene);
+    }
+
+    private function scene_sceneChangeFinish(message:SceneMessage):void {
+      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH));
     }
   }
 }

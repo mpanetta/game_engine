@@ -1,9 +1,12 @@
 package com.core.scene
 {
+  import com.core.error.ErrorBase;
+
   import flash.events.EventDispatcher;
   import flash.geom.Rectangle;
 
   import starling.display.Sprite;
+  import starling.events.Event;
 
   public class SceneBase extends EventDispatcher implements IScene
   {
@@ -25,7 +28,8 @@ package com.core.scene
     // Constructors.
     //
 
-    public function SceneBase() {
+    public function SceneBase(data:Object) {
+      _data:Object
       _count++;
       _starlingView = new Sprite();
 
@@ -50,14 +54,19 @@ package com.core.scene
     // Public methods.
     //
 
-    public function initialize(data:Object):void {
-      _data = data;
-    }
-
-    public function load():void {
-    }
-
     public function resize(rectangle:Rectangle):void {
+    }
+
+    //
+    // Protected methods.
+    //
+
+    protected function load():void {
+      throw new ErrorBase(ErrorBase.ABSTRACT_METHOD, "SceneBase::load");
+    }
+
+    protected function complete():void {
+      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH, {}));
     }
 
     //
@@ -65,11 +74,11 @@ package com.core.scene
     //
 
     private function register():void {
-
+      _starlingView.addEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
     }
 
     private function unregister():void {
-
+      _starlingView.removeEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
     }
 
     private function disposeCheck():void {
@@ -80,5 +89,9 @@ package com.core.scene
     //
     // Event handlers.
     //
+
+    private function starlingView_addedToStage(event:Event):void {
+      load();
+    }
   }
 }

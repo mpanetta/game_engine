@@ -12,9 +12,6 @@ package com.core.scene
     function get disposed():Boolean;
     function get starlingView():Sprite;
 
-    function initialize(data:Object):void;
-    function load():void;
-
     function resize(rectangle:Rectangle):void;
   }
 }
