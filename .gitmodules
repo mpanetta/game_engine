@@ -1,3 +1,6 @@
 [submodule "lib/starling"]
 	path = lib/starling
 	url = https://github.com/PrimaryFeather/Starling-Framework.git
+[submodule "lib/feathers"]
+	path = lib/feathers
+	url = https://github.com/joshtynjala/feathers.git
