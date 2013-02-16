@@ -91,6 +91,9 @@ package com.core.scene
     //
 
     private function starlingView_addedToStage(event:Event):void {
+      starlingView.width = starlingView.stage.stageWidth;
+      starlingView.height = starlingView.stage.stageHeight;
+
       load();
     }
   }

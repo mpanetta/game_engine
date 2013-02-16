@@ -91,7 +91,7 @@ package com.engine
     }
 
     private function setFramerate():void {
-      _options.stage = _options.hasOwnProperty('framerate') ? _options.framerate : DEFAULT_FRAMERATE;
+      _options.framerate = _options.hasOwnProperty('framerate') ? _options.framerate : DEFAULT_FRAMERATE;
     }
 
     //
