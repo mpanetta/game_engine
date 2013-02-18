@@ -1,6 +1,7 @@
 package com.core.net
 {
   import amfSocket.RpcManager;
+  import amfSocket.RpcMessage;
   import amfSocket.RpcObject;
   import amfSocket.RpcReceivedMessage;
   import amfSocket.RpcReceivedRequest;
@@ -62,12 +63,20 @@ package com.core.net
     // Public methods.
     //
 
+    public function connect():void {
+      _rpcManager.connect();
+    }
+
     public function deliver(rpcObject:RpcObject):void {
       _rpcManager.deliver(rpcObject);
     }
 
-    public function connect():void {
-      _rpcManager.connect();
+    public function deliverMessage(command:String, params:Object=null):void {
+      if(params == null)
+        params = {};
+
+      var message:RpcMessage = new RpcMessage(command, params);
+      deliver(message);
     }
 
     //

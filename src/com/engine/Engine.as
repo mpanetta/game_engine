@@ -1,6 +1,8 @@
 package com.engine
 {
   import com.core.messageBus.MessageBus;
+  import com.core.net.NetEvent;
+  import com.core.net.NetManager;
   import com.core.scene.SceneManager;
 
   import flash.events.EventDispatcher;
@@ -70,6 +72,7 @@ package com.engine
 
     private function startUtilityServices(options:Object):void {
       MessageBus.initialize(options);
+      NetManager.initialize('localhost', 9000); // TODO: These shouldn't be hardcoded (constants file?).
     }
 
     private function createRootDisplay(opts:Object):void {

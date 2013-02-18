@@ -1,8 +1,8 @@
 package com.core.net
 {
-  import flash.events.Event;
+  import com.core.messageBus.MessageBase;
 
-  public class NetEvent extends Event
+  public class NetEvent extends MessageBase
   {
     //
     // Constants.
@@ -19,23 +19,17 @@ package com.core.net
     // Instance variables.
     //
 
-    protected var _data:Object;
-
     //
     // Constructors.
     //
 
     public function NetEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) {
-      super(type, bubbles, cancelable);
-
-      _data = data;
+      super(type, data, bubbles, cancelable);
     }
 
     //
     // Getters and setters.
     //
-
-    public function get data():Object { return _data; }
 
     //
     // Public methods.
