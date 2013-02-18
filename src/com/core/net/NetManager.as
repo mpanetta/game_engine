@@ -7,6 +7,7 @@ package com.core.net
   import amfSocket.events.RpcManagerEvent;
 
   import com.core.error.ErrorBase;
+  import com.core.messageBus.MessageBus;
 
   import flash.events.EventDispatcher;
 
@@ -80,6 +81,13 @@ package com.core.net
       _rpcManager.addEventListener(RpcManagerEvent.RECEIVED_MESSAGE, rpcManager_receivedMessage);
       _rpcManager.addEventListener(RpcManagerEvent.RECEIVED_REQUEST, rpcManager_receivedRequest);
       _rpcManager.addEventListener(RpcManagerEvent.RECEIVED_PING, rpcManager_receivedPing);
+
+      MessageBus.instance.add(this, NetEvent.CONNECTED);
+      MessageBus.instance.add(this, NetEvent.DISCONNECTED);
+      MessageBus.instance.add(this, NetEvent.FAILED);
+      MessageBus.instance.add(this, NetEvent.RECEIVED_MESSAGE);
+      MessageBus.instance.add(this, NetEvent.RECEIVED_REQUEST);
+      MessageBus.instance.add(this, NetEvent.PING);
     }
 
     private function unregister():void {
@@ -89,6 +97,13 @@ package com.core.net
       _rpcManager.removeEventListener(RpcManagerEvent.RECEIVED_MESSAGE, rpcManager_receivedMessage);
       _rpcManager.removeEventListener(RpcManagerEvent.RECEIVED_REQUEST, rpcManager_receivedRequest);
       _rpcManager.removeEventListener(RpcManagerEvent.RECEIVED_PING, rpcManager_receivedPing);
+
+      MessageBus.instance.remove(this, NetEvent.CONNECTED);
+      MessageBus.instance.remove(this, NetEvent.DISCONNECTED);
+      MessageBus.instance.remove(this, NetEvent.FAILED);
+      MessageBus.instance.remove(this, NetEvent.RECEIVED_MESSAGE);
+      MessageBus.instance.remove(this, NetEvent.RECEIVED_REQUEST);
+      MessageBus.instance.remove(this, NetEvent.PING);
     }
 
     private function processMessage(message:RpcReceivedMessage):void {
