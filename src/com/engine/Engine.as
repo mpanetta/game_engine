@@ -5,7 +5,11 @@ package com.engine
   import com.core.net.NetManager;
   import com.core.scene.SceneManager;
 
+  import feathers.themes.MetalWorksMobileTheme;
+
   import flash.events.EventDispatcher;
+
+  import starling.display.Stage;
 
   public class Engine extends EventDispatcher
   {
@@ -24,6 +28,7 @@ package com.engine
     private var _options:Object;
     private var _rootDisplay:RootDisplay;
     private var _sceneManager:SceneManager;
+    private var _theme:MetalWorksMobileTheme;
 
     //
     // Constructors.
@@ -85,6 +90,7 @@ package com.engine
     private function initializeEngine():void {
       createSceneGraph();
       setFramerate();
+      startFeathers();
 
       dispatchEvent(new GameMessage(GameMessage.ENGINE_INITIALIZED));
     }
@@ -95,6 +101,10 @@ package com.engine
 
     private function setFramerate():void {
       _options.framerate = _options.hasOwnProperty('framerate') ? _options.framerate : DEFAULT_FRAMERATE;
+    }
+
+    private function startFeathers():void {
+      _theme = new MetalWorksMobileTheme(_rootDisplay.stage as Stage);
     }
 
     //
