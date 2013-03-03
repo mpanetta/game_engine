@@ -1,13 +1,12 @@
 package com.engine
 {
   import com.core.messageBus.MessageBus;
-  import com.core.net.NetEvent;
   import com.core.net.NetManager;
   import com.core.scene.SceneManager;
 
-  import feathers.themes.MetalWorksMobileTheme;
-
   import flash.events.EventDispatcher;
+
+  import feathers.themes.MetalWorksMobileTheme;
 
   import starling.display.Stage;
 
