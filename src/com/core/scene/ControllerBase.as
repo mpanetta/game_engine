@@ -1,13 +1,11 @@
 package com.core.scene
 {
-  import avmplus.getQualifiedClassName;
-
   import com.core.error.ErrorBase;
-  import com.core.operationQueue.OperationQueue;
 
-  import flash.display.Scene;
   import flash.events.EventDispatcher;
   import flash.utils.getDefinitionByName;
+
+  import avmplus.getQualifiedClassName;
 
   public class ControllerBase extends EventDispatcher implements IController
   {
@@ -52,6 +50,8 @@ package com.core.scene
     public function get disposed():Boolean { return _disposed; }
     public function get initialized():Boolean { return _initialized; }
     public function get className():String { return getQualifiedClassName(this); }
+
+    protected function get scene():IScene { return _scene; }
 
     //
     // Public methods.
