@@ -4,9 +4,7 @@ package com.engine
   import flash.display.StageAlign;
   import flash.display.StageScaleMode;
   import flash.events.Event;
-  import flash.events.TimerEvent;
   import flash.geom.Rectangle;
-  import flash.utils.Timer;
 
   import starling.core.Starling;
 
@@ -69,7 +67,7 @@ package com.engine
       (starling as Starling).antiAliasing = _opts.antialiasing;
       (starling as Starling).start();
 
-      Starling.current.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+      Starling.current.viewPort = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
 
       _flashDisplay = (starling as Starling).nativeOverlay;
     }

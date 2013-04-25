@@ -4,6 +4,7 @@ package com.engine
   import com.core.scene.IScene;
 
   import flash.events.EventDispatcher;
+  import flash.geom.Point;
   import flash.geom.Rectangle;
 
   import starling.core.Starling;
@@ -57,6 +58,7 @@ package com.engine
 
     public function addScene(scene:IScene):void {
       _sceneLayer.addChild(scene.starlingView);
+      scene.setScene();
     }
 
     public function removeScene(scene:IScene):void {

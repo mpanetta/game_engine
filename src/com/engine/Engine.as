@@ -8,6 +8,7 @@ package com.engine
 
   import feathers.themes.MetalWorksMobileTheme;
 
+  import starling.core.Starling;
   import starling.display.Stage;
 
   public class Engine extends EventDispatcher
@@ -56,6 +57,7 @@ package com.engine
     //
 
     public function get sceneManager():SceneManager { return _sceneManager; }
+    public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
 
     //
     // Public methods.

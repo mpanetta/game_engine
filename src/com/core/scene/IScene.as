@@ -13,5 +13,6 @@ package com.core.scene
     function get starlingView():Sprite;
 
     function resize(rectangle:Rectangle):void;
+    function setScene():void;
   }
 }

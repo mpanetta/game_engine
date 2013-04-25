@@ -22,7 +22,7 @@ package com.core.scene
 
     private var _disposed:Boolean = false;
     private var _data:Object;
-    private var _starlingView:Sprite;
+    private var _starlingView:Sprite = new Sprite();
 
     //
     // Constructors.
@@ -31,7 +31,6 @@ package com.core.scene
     public function SceneBase(data:Object) {
       _data:Object
       _count++;
-      _starlingView = new Sprite();
 
       register();
     }
@@ -55,6 +54,13 @@ package com.core.scene
     //
 
     public function resize(rectangle:Rectangle):void {
+    }
+
+    public function setScene():void {
+      starlingView.width = 500;//starlingView.stage.stageWidth;
+      starlingView.height = 375;//starlingView.stage.stageHeight;
+
+      load();
     }
 
     //
@@ -91,10 +97,7 @@ package com.core.scene
     //
 
     private function starlingView_addedToStage(event:Event):void {
-      starlingView.width = starlingView.stage.stageWidth;
-      starlingView.height = starlingView.stage.stageHeight;
 
-      load();
     }
   }
 }
