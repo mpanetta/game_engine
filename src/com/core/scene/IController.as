@@ -11,5 +11,6 @@ package com.core.scene
     function get className():String;
 
     function initialize(opts:Object):void;
+    function postLoad():void;
   }
 }

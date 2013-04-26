@@ -64,6 +64,10 @@ package com.core.scene
       startPreloadQueue();
     }
 
+    public function postLoad():void {
+      postComplete();
+    }
+
     //
     // Protected methods.
     //
@@ -72,8 +76,12 @@ package com.core.scene
       throw new ErrorBase(ErrorBase.ABSTRACT_METHOD, "ControllerBase::startPreloadQueue");
     }
 
-    protected function complete():void {
+    protected function preComplete():void {
       dispatchEvent(new SceneMessage(SceneMessage.SCENE_CONTROLLER_PRELOADED, { scene:_scene }));
+    }
+
+    protected function postComplete():void {
+      dispatchEvent(new SceneMessage(SceneMessage.SCENE_CONTROLLER_POSTLOADED, { scene:_scene }));
     }
 
     //

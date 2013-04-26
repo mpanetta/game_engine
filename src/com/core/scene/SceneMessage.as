@@ -10,6 +10,7 @@ package com.core.scene
 
     public static const SCENE_CHANGE_START:String = "SCENE_MESSAGE_SCENE_CHANGE_START";
     public static const SCENE_CONTROLLER_PRELOADED:String = "SCENE_MESSAGE_SCENE_CONTROLLER_PRELOADED";
+    public static const SCENE_CONTROLLER_POSTLOADED:String = "SCENE_MESSAGE_SCENE_CONTROLLER_POSTLOADED";
     public static const SCENE_CHANGE_FINISH:String = "SCENE_MESSAGE_SCENE_CHANGE_FINISH";
 
     // Requests

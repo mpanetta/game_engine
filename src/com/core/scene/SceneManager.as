@@ -114,13 +114,19 @@ package com.core.scene
     private function addScene(controller:IController, opts:Object):void {
       _controller = controller;
 
-      _controller.addEventListener(SceneMessage.SCENE_CONTROLLER_PRELOADED, controller_sceneControllerPreloaded);
+      _controller.addEventListener(SceneMessage.SCENE_CONTROLLER_PRELOADED, controller_sceneControllerPreloaded, false, 0, true);
       _controller.initialize(opts);
     }
 
     private function setScene(scene:IScene):void {
       _scene = scene;
-      _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish);
+
+      _controller.addEventListener(SceneMessage.SCENE_CONTROLLER_POSTLOADED, controller_sceneControllerPostloaded, false, 0, true);
+      _controller.postLoad();
+    }
+
+    private function addSceneToStage():void {
+      _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish, false, 0, true);
 
       _rootDisplay.starlingDisplay.addScene(_scene);
     }
@@ -139,6 +145,10 @@ package com.core.scene
 
     private function controller_sceneControllerPreloaded(message:SceneMessage):void {
       setScene(message.scene);
+    }
+
+    private function controller_sceneControllerPostloaded(event:SceneMessage):void {
+      addSceneToStage();
     }
 
     private function scene_sceneChangeFinish(message:SceneMessage):void {
