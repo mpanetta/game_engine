@@ -2,7 +2,7 @@ package com.core.net
 {
   import com.core.messageBus.MessageBase;
 
-  public class NetEvent extends MessageBase
+  public class NetMessage extends MessageBase
   {
     //
     // Constants.
@@ -14,6 +14,8 @@ package com.core.net
     public static const DISCONNECTED:String = "NET_EVENT_DISCONNECTED";
     public static const RECEIVED_MESSAGE:String = "NET_EVENT_RECEIVED_MESSAGE";
     public static const RECEIVED_REQUEST:String = "NET_EVENT_RECEIVED_REQUEST";
+    public static const AUTH_SUCCESS:String = "NET_EVENT_AUTH_SUCCESS";
+    public static const AUTH_FAILURE:String = "NET_EVENT_AUTH_FAILURE";
 
     //
     // Instance variables.
@@ -23,13 +25,17 @@ package com.core.net
     // Constructors.
     //
 
-    public function NetEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) {
+    public function NetMessage(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) {
       super(type, data, bubbles, cancelable);
     }
 
     //
     // Getters and setters.
     //
+
+    public function get command():String { return data.command; };
+    public function get params():Object { return data.params; };
+    public function get messageId():String { return data.message_id };
 
     //
     // Public methods.

@@ -1,16 +1,16 @@
 package com.core.net
 {
+  import com.core.error.ErrorBase;
+  import com.core.messageBus.MessageBus;
+
+  import flash.events.EventDispatcher;
+
   import amfSocket.RpcManager;
   import amfSocket.RpcMessage;
   import amfSocket.RpcObject;
   import amfSocket.RpcReceivedMessage;
   import amfSocket.RpcReceivedRequest;
   import amfSocket.events.RpcManagerEvent;
-
-  import com.core.error.ErrorBase;
-  import com.core.messageBus.MessageBus;
-
-  import flash.events.EventDispatcher;
 
   public class NetManager extends EventDispatcher
   {
@@ -25,6 +25,8 @@ package com.core.net
     private static var _instance:NetManager;
     private var _options:Object;
     private var _rpcManager:RpcManager;
+    private var _username:String;
+    private var _password:String;
 
     //
     //  Constructors.
@@ -63,8 +65,18 @@ package com.core.net
     // Public methods.
     //
 
-    public function connect():void {
+    public function connect(username:String, password:String):void {
+      if(_rpcManager.isConnected() || _rpcManager.isConnecting())
+        return;
+
+      _username = username;
+      _password = password;
+
       _rpcManager.connect();
+    }
+
+    public function disconnect():void {
+      _rpcManager.disconnect();
     }
 
     public function deliver(rpcObject:RpcObject):void {
@@ -91,12 +103,14 @@ package com.core.net
       _rpcManager.addEventListener(RpcManagerEvent.RECEIVED_REQUEST, rpcManager_receivedRequest);
       _rpcManager.addEventListener(RpcManagerEvent.RECEIVED_PING, rpcManager_receivedPing);
 
-      MessageBus.instance.add(this, NetEvent.CONNECTED);
-      MessageBus.instance.add(this, NetEvent.DISCONNECTED);
-      MessageBus.instance.add(this, NetEvent.FAILED);
-      MessageBus.instance.add(this, NetEvent.RECEIVED_MESSAGE);
-      MessageBus.instance.add(this, NetEvent.RECEIVED_REQUEST);
-      MessageBus.instance.add(this, NetEvent.PING);
+      MessageBus.instance.add(this, NetMessage.CONNECTED);
+      MessageBus.instance.add(this, NetMessage.DISCONNECTED);
+      MessageBus.instance.add(this, NetMessage.FAILED);
+      MessageBus.instance.add(this, NetMessage.RECEIVED_MESSAGE);
+      MessageBus.instance.add(this, NetMessage.RECEIVED_REQUEST);
+      MessageBus.instance.add(this, NetMessage.PING);
+      MessageBus.instance.add(this, NetMessage.AUTH_SUCCESS);
+      MessageBus.instance.add(this, NetMessage.AUTH_FAILURE);
     }
 
     private function unregister():void {
@@ -107,33 +121,55 @@ package com.core.net
       _rpcManager.removeEventListener(RpcManagerEvent.RECEIVED_REQUEST, rpcManager_receivedRequest);
       _rpcManager.removeEventListener(RpcManagerEvent.RECEIVED_PING, rpcManager_receivedPing);
 
-      MessageBus.instance.remove(this, NetEvent.CONNECTED);
-      MessageBus.instance.remove(this, NetEvent.DISCONNECTED);
-      MessageBus.instance.remove(this, NetEvent.FAILED);
-      MessageBus.instance.remove(this, NetEvent.RECEIVED_MESSAGE);
-      MessageBus.instance.remove(this, NetEvent.RECEIVED_REQUEST);
-      MessageBus.instance.remove(this, NetEvent.PING);
+      MessageBus.instance.remove(this, NetMessage.CONNECTED);
+      MessageBus.instance.remove(this, NetMessage.DISCONNECTED);
+      MessageBus.instance.remove(this, NetMessage.FAILED);
+      MessageBus.instance.remove(this, NetMessage.RECEIVED_MESSAGE);
+      MessageBus.instance.remove(this, NetMessage.RECEIVED_REQUEST);
+      MessageBus.instance.remove(this, NetMessage.PING);
+      MessageBus.instance.remove(this, NetMessage.AUTH_SUCCESS);
+      MessageBus.instance.remove(this, NetMessage.AUTH_FAILURE);
     }
 
-    private function processMessage(message:RpcReceivedMessage):void {
+    private function handleRpcReceivedMessage(message:RpcReceivedMessage):void {
       switch(message.command) {
         //
         // Game Engine specific messages should be handled here.
         //
-
+        case 'login_res':
+          handleLoginResMessage(message.params);
+          break;
         default:
-          dispatchEvent(new NetEvent(NetEvent.RECEIVED_MESSAGE, message));
+          dispatchEvent(new NetMessage(NetMessage.RECEIVED_MESSAGE, { command:message.command, params:message.params, messageId:message.messageId }));
       }
     }
 
-    private function processRequest(request:RpcReceivedRequest):void {
+    private function handleRpcReceivedRequest(request:RpcReceivedRequest):void {
       switch(request.command) {
         //
         // Game Engine specific requests should be handled here.
         //
-
         default:
-          dispatchEvent(new NetEvent(NetEvent.RECEIVED_REQUEST, request));
+          dispatchEvent(new NetMessage(NetMessage.RECEIVED_REQUEST, request));
+      }
+    }
+
+    private function handleConnected(data:Object):void {
+      dispatchEvent(new NetMessage(NetMessage.CONNECTED, data));
+      deliverMessage('login_req', { identifier:_username, password:_password });
+    }
+
+    //
+    // RPC Message Handlers.
+    //
+
+    private function handleLoginResMessage(params:Object):void {
+      if(params.success) {
+        dispatchEvent(new NetMessage(NetMessage.AUTH_SUCCESS));
+      }
+      else {
+        dispatchEvent(new NetMessage(NetMessage.AUTH_FAILURE));
+        _rpcManager.disconnect();
       }
     }
 
@@ -142,27 +178,27 @@ package com.core.net
     //
 
     private function rpcManager_connected(event:RpcManagerEvent):void {
-      dispatchEvent(new NetEvent(NetEvent.CONNECTED, event.data));
+      handleConnected(event.data);
     }
 
     private function rpcManager_disconnected(event:RpcManagerEvent):void {
-      dispatchEvent(new NetEvent(NetEvent.DISCONNECTED, event.data));
+      dispatchEvent(new NetMessage(NetMessage.DISCONNECTED, event.data));
     }
 
     private function rpcManager_failed(event:RpcManagerEvent):void {
-      dispatchEvent(new NetEvent(NetEvent.FAILED, event.data));
+      dispatchEvent(new NetMessage(NetMessage.FAILED, event.data));
     }
 
     private function rpcManager_receivedMessage(event:RpcManagerEvent):void {
-      processMessage(event.data as RpcReceivedMessage);
+      handleRpcReceivedMessage(event.data as RpcReceivedMessage);
     }
 
     private function rpcManager_receivedRequest(event:RpcManagerEvent):void {
-      processRequest(event.data as RpcReceivedRequest);
+      handleRpcReceivedRequest(event.data as RpcReceivedRequest);
     }
 
     private function rpcManager_receivedPing(event:RpcManagerEvent):void {
-      dispatchEvent(new NetEvent(NetEvent.PING, event.data));
+      dispatchEvent(new NetMessage(NetMessage.PING, event.data));
     }
   }
 }

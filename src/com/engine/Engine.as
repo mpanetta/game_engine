@@ -78,7 +78,7 @@ package com.engine
 
     private function startUtilityServices(options:Object):void {
       MessageBus.initialize(options);
-      NetManager.initialize('localhost', 9000); // TODO: These shouldn't be hardcoded (constants file?).
+      NetManager.initialize('localhost', 9000);
     }
 
     private function createRootDisplay(opts:Object):void {
