@@ -101,7 +101,7 @@ package com.core.messageBus
     public function removeForClass(target:EventDispatcher, eventClass:Class):void {
       var constants:Array = eventTypesFor(eventClass);
 
-      for each (var type:String in constants)
+      for each(var type:String in constants)
         remove(target, eventClass[type]);
     }
 
