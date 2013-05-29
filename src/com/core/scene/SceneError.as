@@ -10,6 +10,7 @@ package com.core.scene
 
     public static const ALREADY_DISPOSED:String = "Scene already disposed";
     public static const INVALID_SCENE_CLASS:String = "Invalid scene class";
+    public static const INVALID_MESSAGE_CLASS:String = "Invalid message class";
 
     //
     // Instance variables.

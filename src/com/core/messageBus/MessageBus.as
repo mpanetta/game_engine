@@ -3,6 +3,7 @@ package com.core.messageBus
   import com.core.dataStructures.Hash;
   import com.core.dataStructures.Set;
   import com.core.error.ErrorBase;
+  import com.util.eventTypesFor;
 
   import flash.events.EventDispatcher;
   import flash.utils.describeType;
@@ -121,15 +122,6 @@ package com.core.messageBus
     private function broadcast(event:*):void {
       if(hasEventListener(event.type))
         dispatchEvent(event);
-    }
-
-    private function eventTypesFor(type:Class):Array {
-      var result:Array = [];
-
-      for each(var constant:XML in describeType(type).constant)
-        result.push(constant.@name.toString());
-
-      return result;
     }
   }
 }

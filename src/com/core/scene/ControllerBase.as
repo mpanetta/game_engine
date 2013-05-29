@@ -1,11 +1,18 @@
+namespace scene;
+
 package com.core.scene
 {
   import com.core.error.ErrorBase;
+  import com.core.namespaces.scene_message;
+  import com.util.eventTypesFor;
+  import com.util.methodForEvent;
 
   import flash.events.EventDispatcher;
   import flash.utils.getDefinitionByName;
 
   import avmplus.getQualifiedClassName;
+
+  use namespace scene_message;
 
   public class ControllerBase extends EventDispatcher implements IController
   {
@@ -23,6 +30,7 @@ package com.core.scene
     private var _disposed:Boolean = false;
     private var _data:Object;
     private var _scene:IScene;
+    private var _viewClass:String;
 
     //
     // Constructors.
@@ -89,25 +97,44 @@ package com.core.scene
     //
 
     private function register():void {
-
     }
 
     private function unregister():void {
-
+      registerMessageClass(className, _scene, false);
     }
 
     private function sceneFor(viewClass:String):void {
-      var className:String = parseClassName(viewClass);
+      var className:String = parseController(viewClass);
       var sceneClass:Class = getDefinitionByName(className) as Class;
 
       if(!sceneClass)
-        throw new SceneError(SceneError.INVALID_SCENE_CLASS, " for controller class: " + viewClass);
+        throw new SceneError(SceneError.INVALID_SCENE_CLASS, " for view class: " + viewClass);
 
       _scene = new sceneClass(_data);
+      registerMessageClass(viewClass, _scene, true);
     }
 
+    private function registerMessageClass(viewClass:String, scene:IScene, add:Boolean):void {
+      var className:String = parseMessage(viewClass);
+      try {
+        var messageClass:Class = getDefinitionByName(className) as Class;
+      } catch(ReferenceError) {
+        return;
+      }
 
-    private function parseClassName(viewClass:String):String {
+      if(!messageClass)
+        throw new SceneError(SceneError.INVALID_MESSAGE_CLASS, " for view class: " + viewClass);
+
+      var eventTypes:Array = eventTypesFor(messageClass);
+      for each(var type:String in eventTypes) {
+        if(add == true)
+          scene.addEventListener((messageClass as Object)[type], (this as Object)["scene_" + methodForEvent(type)])
+        else
+          scene.removeEventListener((messageClass as Object)[type], (this as Object)["scene_" + methodForEvent(type)])
+      }
+    }
+
+    private function parseController(viewClass:String):String {
       var base:String;
 
       if(viewClass.match("::"))
@@ -118,6 +145,16 @@ package com.core.scene
       return "com.scenes" + base.split("Controller")[0] + "Scene";
     }
 
+    private function parseMessage(viewClass:String):String {
+      var base:String;
+
+      if(viewClass.match("::"))
+        base = viewClass.substr(viewClass.indexOf("::"));
+      else
+        base = "::" + viewClass;
+
+      return "com.events" + base.split("Controller")[0] + "Message";
+    }
 
     private function disposeCheck():void {
       if(_disposed)
