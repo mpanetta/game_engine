@@ -6,7 +6,6 @@ package com.core.messageBus
   import com.util.eventTypesFor;
 
   import flash.events.EventDispatcher;
-  import flash.utils.describeType;
 
   public class MessageBus extends EventDispatcher
   {
