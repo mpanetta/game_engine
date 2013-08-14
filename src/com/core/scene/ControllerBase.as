@@ -8,6 +8,7 @@ package com.core.scene
   import com.util.methodForEvent;
 
   import flash.events.EventDispatcher;
+  import flash.events.IEventDispatcher;
   import flash.utils.getDefinitionByName;
 
   import avmplus.getQualifiedClassName;
@@ -92,6 +93,28 @@ package com.core.scene
       dispatchEvent(new SceneMessage(SceneMessage.SCENE_CONTROLLER_POSTLOADED, { scene:_scene }));
     }
 
+    protected function registerMessageClass(messageClass:Class, target:IEventDispatcher, targetName:String):void {
+      var eventTypes:Array = eventTypesFor(messageClass);
+      var listenerName:String = "";
+      for each(var type:String in eventTypes) {
+        listenerName = targetName + '_' + methodForEvent(type);
+        try {
+          target.addEventListener((messageClass as Object)[type], (this as Object)[listenerName]);
+        } catch(error:Error) {
+        }
+      }
+    }
+
+    protected function unregisterMessageClass(messageClass, target:IEventDispatcher, targetName:String):void {
+      var eventTypes:Array = eventTypesFor(messageClass);
+      var listenerName:String = "";
+      for each(var type:String in eventTypes) {
+        listenerName = targetName + '_' + methodForEvent(type);
+
+        target.removeEventListener((messageClass as Object)[type], (this as Object)[listenerName]);
+      }
+    }
+
     //
     // Private methods.
     //
@@ -100,7 +123,7 @@ package com.core.scene
     }
 
     private function unregister():void {
-      registerMessageClass(className, _scene, false);
+      registerSceneMessageClass(className, _scene, false);
     }
 
     private function sceneFor(viewClass:String):void {
@@ -111,10 +134,10 @@ package com.core.scene
         throw new SceneError(SceneError.INVALID_SCENE_CLASS, " for view class: " + viewClass);
 
       _scene = new sceneClass(_data);
-      registerMessageClass(viewClass, _scene, true);
+      registerSceneMessageClass(viewClass, _scene, true);
     }
 
-    private function registerMessageClass(viewClass:String, scene:IScene, add:Boolean):void {
+    private function registerSceneMessageClass(viewClass:String, scene:IScene, add:Boolean):void {
       var className:String = parseMessage(viewClass);
       try {
         var messageClass:Class = getDefinitionByName(className) as Class;
@@ -125,13 +148,7 @@ package com.core.scene
       if(!messageClass)
         throw new SceneError(SceneError.INVALID_MESSAGE_CLASS, " for view class: " + viewClass);
 
-      var eventTypes:Array = eventTypesFor(messageClass);
-      for each(var type:String in eventTypes) {
-        if(add == true)
-          scene.addEventListener((messageClass as Object)[type], (this as Object)["scene_" + methodForEvent(type)])
-        else
-          scene.removeEventListener((messageClass as Object)[type], (this as Object)["scene_" + methodForEvent(type)])
-      }
+      add ? registerMessageClass(messageClass, scene, 'scene') : unregisterMessageClass(messageClass, scene, 'scene');
     }
 
     private function parseController(viewClass:String):String {
