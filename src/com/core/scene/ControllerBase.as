@@ -99,8 +99,10 @@ package com.core.scene
       for each(var type:String in eventTypes) {
         listenerName = targetName + '_' + methodForEvent(type);
         try {
+          trace("ADDED: " + listenerName);
           target.addEventListener((messageClass as Object)[type], (this as Object)[listenerName]);
         } catch(error:Error) {
+          trace("NO LISTENER: " + listenerName);
         }
       }
     }
