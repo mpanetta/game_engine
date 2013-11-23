@@ -24,6 +24,7 @@
  */
 package feathers.themes
 {
+	import feathers.controls.Alert;
 	import feathers.controls.Button;
 	import feathers.controls.ButtonGroup;
 	import feathers.controls.Callout;
@@ -43,6 +44,7 @@ package feathers.themes
 	import feathers.controls.Screen;
 	import feathers.controls.ScrollContainer;
 	import feathers.controls.ScrollText;
+	import feathers.controls.Scroller;
 	import feathers.controls.SimpleScrollBar;
 	import feathers.controls.Slider;
 	import feathers.controls.TabBar;
@@ -55,6 +57,7 @@ package feathers.themes
 	import feathers.controls.renderers.DefaultGroupedListItemRenderer;
 	import feathers.controls.renderers.DefaultListItemRenderer;
 	import feathers.controls.text.StageTextTextEditor;
+	import feathers.controls.text.TextFieldTextEditor;
 	import feathers.controls.text.TextFieldTextRenderer;
 	import feathers.core.DisplayListWatcher;
 	import feathers.core.FeathersControl;
@@ -62,6 +65,7 @@ package feathers.themes
 	import feathers.display.Scale3Image;
 	import feathers.display.Scale9Image;
 	import feathers.display.TiledImage;
+	import feathers.layout.HorizontalLayout;
 	import feathers.layout.VerticalLayout;
 	import feathers.skins.SmartDisplayObjectStateValueSelector;
 	import feathers.skins.StandardIcons;
@@ -72,6 +76,7 @@ package feathers.themes
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -79,7 +84,6 @@ package feathers.themes
 	import starling.display.Image;
 	import starling.display.Quad;
 	import starling.events.Event;
-	import starling.events.ResizeEvent;
 	import starling.textures.Texture;
 	import starling.textures.TextureAtlas;
 
@@ -97,17 +101,19 @@ package feathers.themes
 		[Embed(source="/../assets/fonts/SourceSansPro-Semibold.ttf",fontName="SourceSansProSemibold",fontWeight="bold",mimeType="application/x-font",embedAsCFF="false")]
 		protected static const SOURCE_SANS_PRO_SEMIBOLD:Class;
 
+		protected static const PRIMARY_BACKGROUND_COLOR:uint = 0x4a4137;
 		protected static const LIGHT_TEXT_COLOR:uint = 0xe5e5e5;
 		protected static const DARK_TEXT_COLOR:uint = 0x1a1816;
 		protected static const SELECTED_TEXT_COLOR:uint = 0xff9900;
 		protected static const DISABLED_TEXT_COLOR:uint = 0x8a8a8a;
-		protected static const LIST_BACKGROUND_COLOR:uint = 0x383330;
-		protected static const HEADER_BACKGROUND_COLOR:uint = 0x1a1816;
+		protected static const DARK_DISABLED_TEXT_COLOR:uint = 0x383430;
+		protected static const LIST_BACKGROUND_COLOR:uint = 0x383430;
 		protected static const TAB_BACKGROUND_COLOR:uint = 0x1a1816;
 		protected static const TAB_DISABLED_BACKGROUND_COLOR:uint = 0x292624;
-		protected static const MODAL_OVERLAY_COLOR:uint = 0x1a1816;
-		protected static const GROUPED_LIST_HEADER_BACKGROUND_COLOR:uint = 0x242322;
-		protected static const GROUPED_LIST_FOOTER_BACKGROUND_COLOR:uint = 0x242322;
+		protected static const GROUPED_LIST_HEADER_BACKGROUND_COLOR:uint = 0x2e2a26;
+		protected static const GROUPED_LIST_FOOTER_BACKGROUND_COLOR:uint = 0x2e2a26;
+		protected static const MODAL_OVERLAY_COLOR:uint = 0x29241e;
+		protected static const MODAL_OVERLAY_ALPHA:Number = 0.8;
 
 		protected static const ORIGINAL_DPI_IPHONE_RETINA:int = 326;
 		protected static const ORIGINAL_DPI_IPAD_RETINA:int = 264;
@@ -127,13 +133,12 @@ package feathers.themes
 		protected static const SCROLL_BAR_THUMB_REGION1:int = 5;
 		protected static const SCROLL_BAR_THUMB_REGION2:int = 14;
 
-		public static const COMPONENT_NAME_PICKER_LIST_ITEM_RENDERER:String = "feathers-mobile-picker-list-item-renderer";
+		public static const COMPONENT_NAME_PICKER_LIST_ITEM_RENDERER:String = "metal-works-mobile-picker-list-item-renderer";
+		public static const COMPONENT_NAME_ALERT_BUTTON_GROUP_BUTTON:String = "metal-works-mobile-alert-button-group-button";
 
 		protected static function textRendererFactory():TextFieldTextRenderer
 		{
-			const renderer:TextFieldTextRenderer = new TextFieldTextRenderer();
-			renderer.embedFonts = true;
-			return renderer;
+			return new TextFieldTextRenderer();
 		}
 
 		protected static function textEditorFactory():StageTextTextEditor
@@ -141,10 +146,15 @@ package feathers.themes
 			return new StageTextTextEditor();
 		}
 
+		protected static function stepperTextEditorFactory():TextFieldTextEditor
+		{
+			return new TextFieldTextEditor();
+		}
+
 		protected static function popUpOverlayFactory():DisplayObject
 		{
 			const quad:Quad = new Quad(100, 100, MODAL_OVERLAY_COLOR);
-			quad.alpha = 0.75;
+			quad.alpha = MODAL_OVERLAY_ALPHA;
 			return quad;
 		}
 
@@ -175,14 +185,14 @@ package feathers.themes
 
 		protected var scale:Number = 1;
 
-		protected var primaryBackground:TiledImage;
-
 		protected var headerTextFormat:TextFormat;
 
-		protected var smallUIDarkTextFormat:TextFormat;
-		protected var smallUILightTextFormat:TextFormat;
-		protected var smallUISelectedTextFormat:TextFormat;
-		protected var smallUIDisabledTextFormat:TextFormat;
+		protected var darkUITextFormat:TextFormat;
+		protected var lightUITextFormat:TextFormat;
+		protected var selectedUITextFormat:TextFormat;
+		protected var lightUIDisabledTextFormat:TextFormat;
+		protected var darkUIDisabledTextFormat:TextFormat;
+		protected var lightCenteredUITextFormat:TextFormat;
 
 		protected var largeUIDarkTextFormat:TextFormat;
 		protected var largeUILightTextFormat:TextFormat;
@@ -193,14 +203,19 @@ package feathers.themes
 		protected var largeLightTextFormat:TextFormat;
 		protected var largeDisabledTextFormat:TextFormat;
 
-		protected var smallDarkTextFormat:TextFormat;
+		protected var darkTextFormat:TextFormat;
+		protected var lightTextFormat:TextFormat;
+		protected var disabledTextFormat:TextFormat;
+		protected var lightCenteredTextFormat:TextFormat;
+
 		protected var smallLightTextFormat:TextFormat;
 		protected var smallDisabledTextFormat:TextFormat;
 
 		protected var atlas:TextureAtlas;
 		protected var atlasBitmapData:BitmapData;
-		protected var primaryBackgroundTexture:Texture;
+		protected var headerBackgroundSkinTexture:Texture;
 		protected var backgroundSkinTextures:Scale9Textures;
+		protected var backgroundInsetSkinTextures:Scale9Textures;
 		protected var backgroundDisabledSkinTextures:Scale9Textures;
 		protected var backgroundFocusedSkinTextures:Scale9Textures;
 		protected var buttonUpSkinTextures:Scale9Textures;
@@ -210,6 +225,10 @@ package feathers.themes
 		protected var buttonSelectedDisabledSkinTextures:Scale9Textures;
 		protected var buttonCallToActionUpSkinTextures:Scale9Textures;
 		protected var buttonCallToActionDownSkinTextures:Scale9Textures;
+		protected var buttonQuietUpSkinTextures:Scale9Textures;
+		protected var buttonQuietDownSkinTextures:Scale9Textures;
+		protected var buttonDangerUpSkinTextures:Scale9Textures;
+		protected var buttonDangerDownSkinTextures:Scale9Textures;
 		protected var buttonBackUpSkinTextures:Scale3Textures;
 		protected var buttonBackDownSkinTextures:Scale3Textures;
 		protected var buttonBackDisabledSkinTextures:Scale3Textures;
@@ -250,19 +269,13 @@ package feathers.themes
 		protected var calloutLeftArrowSkinTexture:Texture;
 		protected var verticalScrollBarThumbSkinTextures:Scale3Textures;
 		protected var horizontalScrollBarThumbSkinTextures:Scale3Textures;
+		protected var searchIconTexture:Texture;
 
 		override public function dispose():void
 		{
 			if(this.root)
 			{
 				this.root.removeEventListener(Event.ADDED_TO_STAGE, root_addedToStageHandler);
-				if(this.primaryBackground)
-				{
-					this.root.stage.removeEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-					this.root.removeEventListener(Event.REMOVED_FROM_STAGE, root_removedFromStageHandler);
-					this.root.removeChild(this.primaryBackground, true);
-					this.primaryBackground = null;
-				}
 			}
 			if(this.atlas)
 			{
@@ -279,12 +292,13 @@ package feathers.themes
 
 		protected function initializeRoot():void
 		{
-			this.primaryBackground = new TiledImage(this.primaryBackgroundTexture);
-			this.primaryBackground.width = root.stage.stageWidth;
-			this.primaryBackground.height = root.stage.stageHeight;
-			this.root.addChildAt(this.primaryBackground, 0);
-			this.root.stage.addEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-			this.root.addEventListener(Event.REMOVED_FROM_STAGE, root_removedFromStageHandler);
+			if(this.root != this.root.stage)
+			{
+				return;
+			}
+
+			this.root.stage.color = PRIMARY_BACKGROUND_COLOR;
+			Starling.current.nativeStage.color = PRIMARY_BACKGROUND_COLOR;
 		}
 
 		protected function initialize():void
@@ -313,23 +327,29 @@ package feathers.themes
 
 			this.headerTextFormat = new TextFormat(semiboldFontNames, Math.round(36 * this.scale), LIGHT_TEXT_COLOR, true);
 
-			this.smallUIDarkTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, DARK_TEXT_COLOR, true);
-			this.smallUILightTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, LIGHT_TEXT_COLOR, true);
-			this.smallUISelectedTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, SELECTED_TEXT_COLOR, true);
-			this.smallUIDisabledTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, DISABLED_TEXT_COLOR, true);
+			this.darkUITextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, DARK_TEXT_COLOR, true);
+			this.lightUITextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, LIGHT_TEXT_COLOR, true);
+			this.selectedUITextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, SELECTED_TEXT_COLOR, true);
+			this.lightUIDisabledTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, DISABLED_TEXT_COLOR, true);
+			this.darkUIDisabledTextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, DARK_DISABLED_TEXT_COLOR, true);
+			this.lightCenteredUITextFormat = new TextFormat(semiboldFontNames, 24 * this.scale, LIGHT_TEXT_COLOR, true, null, null, null, null, TextFormatAlign.CENTER);
 
-			this.largeUIDarkTextFormat = new TextFormat(semiboldFontNames, 30 * this.scale, DARK_TEXT_COLOR, true);
-			this.largeUILightTextFormat = new TextFormat(semiboldFontNames, 30 * this.scale, LIGHT_TEXT_COLOR, true);
-			this.largeUISelectedTextFormat = new TextFormat(semiboldFontNames, 30 * this.scale, SELECTED_TEXT_COLOR, true);
-			this.largeUIDisabledTextFormat = new TextFormat(semiboldFontNames, 30 * this.scale, DISABLED_TEXT_COLOR, true);
+			this.largeUIDarkTextFormat = new TextFormat(semiboldFontNames, 28 * this.scale, DARK_TEXT_COLOR, true);
+			this.largeUILightTextFormat = new TextFormat(semiboldFontNames, 28 * this.scale, LIGHT_TEXT_COLOR, true);
+			this.largeUISelectedTextFormat = new TextFormat(semiboldFontNames, 28 * this.scale, SELECTED_TEXT_COLOR, true);
+			this.largeUIDisabledTextFormat = new TextFormat(semiboldFontNames, 28 * this.scale, DISABLED_TEXT_COLOR, true);
 
-			this.smallDarkTextFormat = new TextFormat(regularFontNames, 24 * this.scale, DARK_TEXT_COLOR);
-			this.smallLightTextFormat = new TextFormat(regularFontNames, 24 * this.scale, LIGHT_TEXT_COLOR);
-			this.smallDisabledTextFormat = new TextFormat(regularFontNames, 24 * this.scale, DISABLED_TEXT_COLOR);
+			this.darkTextFormat = new TextFormat(regularFontNames, 24 * this.scale, DARK_TEXT_COLOR);
+			this.lightTextFormat = new TextFormat(regularFontNames, 24 * this.scale, LIGHT_TEXT_COLOR);
+			this.disabledTextFormat = new TextFormat(regularFontNames, 24 * this.scale, DISABLED_TEXT_COLOR);
+			this.lightCenteredTextFormat = new TextFormat(regularFontNames, 24 * this.scale, LIGHT_TEXT_COLOR, null, null, null, null, null, TextFormatAlign.CENTER);
 
-			this.largeDarkTextFormat = new TextFormat(regularFontNames, 30 * this.scale, DARK_TEXT_COLOR);
-			this.largeLightTextFormat = new TextFormat(regularFontNames, 30 * this.scale, LIGHT_TEXT_COLOR);
-			this.largeDisabledTextFormat = new TextFormat(regularFontNames, 30 * this.scale, DISABLED_TEXT_COLOR);
+			this.smallLightTextFormat = new TextFormat(regularFontNames, 18 * this.scale, LIGHT_TEXT_COLOR);
+			this.smallDisabledTextFormat = new TextFormat(regularFontNames, 18 * this.scale, DISABLED_TEXT_COLOR);
+
+			this.largeDarkTextFormat = new TextFormat(regularFontNames, 28 * this.scale, DARK_TEXT_COLOR);
+			this.largeLightTextFormat = new TextFormat(regularFontNames, 28 * this.scale, LIGHT_TEXT_COLOR);
+			this.largeDisabledTextFormat = new TextFormat(regularFontNames, 28 * this.scale, DISABLED_TEXT_COLOR);
 
 			PopUpManager.overlayFactory = popUpOverlayFactory;
 			Callout.stagePaddingTop = Callout.stagePaddingRight = Callout.stagePaddingBottom =
@@ -346,15 +366,16 @@ package feathers.themes
 				atlasBitmapData.dispose();
 			}
 
-			this.primaryBackgroundTexture = this.atlas.getTexture("primary-background");
 
 			const backgroundSkinTexture:Texture = this.atlas.getTexture("background-skin");
+			const backgroundInsetSkinTexture:Texture = this.atlas.getTexture("background-inset-skin");
 			const backgroundDownSkinTexture:Texture = this.atlas.getTexture("background-down-skin");
 			const backgroundDisabledSkinTexture:Texture = this.atlas.getTexture("background-disabled-skin");
 			const backgroundFocusedSkinTexture:Texture = this.atlas.getTexture("background-focused-skin");
 			const backgroundPopUpSkinTexture:Texture = this.atlas.getTexture("background-popup-skin");
 
 			this.backgroundSkinTextures = new Scale9Textures(backgroundSkinTexture, DEFAULT_SCALE9_GRID);
+			this.backgroundInsetSkinTextures = new Scale9Textures(backgroundInsetSkinTexture, DEFAULT_SCALE9_GRID);
 			this.backgroundDisabledSkinTextures = new Scale9Textures(backgroundDisabledSkinTexture, DEFAULT_SCALE9_GRID);
 			this.backgroundFocusedSkinTextures = new Scale9Textures(backgroundFocusedSkinTexture, DEFAULT_SCALE9_GRID);
 			this.backgroundPopUpSkinTextures = new Scale9Textures(backgroundPopUpSkinTexture, DEFAULT_SCALE9_GRID);
@@ -366,6 +387,10 @@ package feathers.themes
 			this.buttonSelectedDisabledSkinTextures = new Scale9Textures(this.atlas.getTexture("button-selected-disabled-skin"), BUTTON_SELECTED_SCALE9_GRID);
 			this.buttonCallToActionUpSkinTextures = new Scale9Textures(this.atlas.getTexture("button-call-to-action-up-skin"), BUTTON_SCALE9_GRID);
 			this.buttonCallToActionDownSkinTextures = new Scale9Textures(this.atlas.getTexture("button-call-to-action-down-skin"), BUTTON_SCALE9_GRID);
+			this.buttonQuietUpSkinTextures = new Scale9Textures(this.atlas.getTexture("button-quiet-up-skin"), BUTTON_SCALE9_GRID);
+			this.buttonQuietDownSkinTextures = new Scale9Textures(this.atlas.getTexture("button-quiet-down-skin"), BUTTON_SCALE9_GRID);
+			this.buttonDangerUpSkinTextures = new Scale9Textures(this.atlas.getTexture("button-danger-up-skin"), BUTTON_SCALE9_GRID);
+			this.buttonDangerDownSkinTextures = new Scale9Textures(this.atlas.getTexture("button-danger-down-skin"), BUTTON_SCALE9_GRID);
 			this.buttonBackUpSkinTextures = new Scale3Textures(this.atlas.getTexture("button-back-up-skin"), BACK_BUTTON_SCALE3_REGION1, BACK_BUTTON_SCALE3_REGION2);
 			this.buttonBackDownSkinTextures = new Scale3Textures(this.atlas.getTexture("button-back-down-skin"), BACK_BUTTON_SCALE3_REGION1, BACK_BUTTON_SCALE3_REGION2);
 			this.buttonBackDisabledSkinTextures = new Scale3Textures(this.atlas.getTexture("button-back-disabled-skin"), BACK_BUTTON_SCALE3_REGION1, BACK_BUTTON_SCALE3_REGION2);
@@ -397,6 +422,8 @@ package feathers.themes
 			this.pageIndicatorSelectedSkinTexture = this.atlas.getTexture("page-indicator-selected-skin");
 			this.pageIndicatorNormalSkinTexture = this.atlas.getTexture("page-indicator-normal-skin");
 
+			this.searchIconTexture = this.atlas.getTexture("search-icon");
+
 			this.itemRendererUpSkinTextures = new Scale9Textures(this.atlas.getTexture("list-item-up-skin"), ITEM_RENDERER_SCALE9_GRID);
 			this.itemRendererSelectedSkinTextures = new Scale9Textures(this.atlas.getTexture("list-item-selected-skin"), ITEM_RENDERER_SCALE9_GRID);
 			this.insetItemRendererFirstUpSkinTextures = new Scale9Textures(this.atlas.getTexture("list-inset-item-first-up-skin"), INSET_ITEM_RENDERER_FIRST_SCALE9_GRID);
@@ -405,6 +432,8 @@ package feathers.themes
 			this.insetItemRendererLastSelectedSkinTextures = new Scale9Textures(this.atlas.getTexture("list-inset-item-last-selected-skin"), INSET_ITEM_RENDERER_LAST_SCALE9_GRID);
 			this.insetItemRendererSingleUpSkinTextures = new Scale9Textures(this.atlas.getTexture("list-inset-item-single-up-skin"), INSET_ITEM_RENDERER_SINGLE_SCALE9_GRID);
 			this.insetItemRendererSingleSelectedSkinTextures = new Scale9Textures(this.atlas.getTexture("list-inset-item-single-selected-skin"), INSET_ITEM_RENDERER_SINGLE_SCALE9_GRID);
+
+			this.headerBackgroundSkinTexture = this.atlas.getTexture("header-background-skin");
 
 			this.calloutTopArrowSkinTexture = this.atlas.getTexture("callout-arrow-top-skin");
 			this.calloutRightArrowSkinTexture = this.atlas.getTexture("callout-arrow-right-skin");
@@ -428,14 +457,19 @@ package feathers.themes
 			this.setInitializerForClassAndSubclasses(Screen, screenInitializer);
 			this.setInitializerForClassAndSubclasses(PanelScreen, panelScreenInitializer);
 			this.setInitializerForClass(Label, labelInitializer);
+			this.setInitializerForClass(Label, headingLabelInitializer, Label.ALTERNATE_NAME_HEADING);
+			this.setInitializerForClass(Label, detailLabelInitializer, Label.ALTERNATE_NAME_DETAIL);
 			this.setInitializerForClass(TextFieldTextRenderer, itemRendererAccessoryLabelInitializer, BaseDefaultItemRenderer.DEFAULT_CHILD_NAME_ACCESSORY_LABEL);
+			this.setInitializerForClass(TextFieldTextRenderer, alertMessageInitializer, Alert.DEFAULT_CHILD_NAME_MESSAGE);
 			this.setInitializerForClass(ScrollText, scrollTextInitializer);
 			this.setInitializerForClass(Button, buttonInitializer);
 			this.setInitializerForClass(Button, callToActionButtonInitializer, Button.ALTERNATE_NAME_CALL_TO_ACTION_BUTTON);
+			this.setInitializerForClass(Button, quietButtonInitializer, Button.ALTERNATE_NAME_QUIET_BUTTON);
+			this.setInitializerForClass(Button, dangerButtonInitializer, Button.ALTERNATE_NAME_DANGER_BUTTON);
 			this.setInitializerForClass(Button, backButtonInitializer, Button.ALTERNATE_NAME_BACK_BUTTON);
 			this.setInitializerForClass(Button, forwardButtonInitializer, Button.ALTERNATE_NAME_FORWARD_BUTTON);
-			this.setInitializerForClass(Button, buttonInitializer);
 			this.setInitializerForClass(Button, buttonGroupButtonInitializer, ButtonGroup.DEFAULT_CHILD_NAME_BUTTON);
+			this.setInitializerForClass(Button, alertButtonGroupButtonInitializer, COMPONENT_NAME_ALERT_BUTTON_GROUP_BUTTON);
 			this.setInitializerForClass(Button, simpleButtonInitializer, ToggleSwitch.DEFAULT_CHILD_NAME_THUMB);
 			this.setInitializerForClass(Button, simpleButtonInitializer, Slider.DEFAULT_CHILD_NAME_THUMB);
 			this.setInitializerForClass(Button, pickerListButtonInitializer, PickerList.DEFAULT_CHILD_NAME_BUTTON);
@@ -445,6 +479,7 @@ package feathers.themes
 			this.setInitializerForClass(Button, toggleSwitchTrackInitializer, ToggleSwitch.DEFAULT_CHILD_NAME_ON_TRACK);
 			this.setInitializerForClass(Button, nothingInitializer, SimpleScrollBar.DEFAULT_CHILD_NAME_THUMB);
 			this.setInitializerForClass(ButtonGroup, buttonGroupInitializer);
+			this.setInitializerForClass(ButtonGroup, alertButtonGroupInitializer, Alert.DEFAULT_CHILD_NAME_BUTTON_GROUP);
 			this.setInitializerForClass(DefaultListItemRenderer, itemRendererInitializer);
 			this.setInitializerForClass(DefaultListItemRenderer, pickerListItemRendererInitializer, COMPONENT_NAME_PICKER_LIST_ITEM_RENDERER);
 			this.setInitializerForClass(DefaultGroupedListItemRenderer, itemRendererInitializer);
@@ -460,20 +495,25 @@ package feathers.themes
 			this.setInitializerForClass(Check, checkInitializer);
 			this.setInitializerForClass(Slider, sliderInitializer);
 			this.setInitializerForClass(ToggleSwitch, toggleSwitchInitializer);
+			this.setInitializerForClass(NumericStepper, numericStepperInitializer);
 			this.setInitializerForClass(TextInput, textInputInitializer);
+			this.setInitializerForClass(TextInput, searchTextInputInitializer, TextInput.ALTERNATE_NAME_SEARCH_TEXT_INPUT);
 			this.setInitializerForClass(TextInput, numericStepperTextInputInitializer, NumericStepper.DEFAULT_CHILD_NAME_TEXT_INPUT);
 			this.setInitializerForClass(PageIndicator, pageIndicatorInitializer);
 			this.setInitializerForClass(ProgressBar, progressBarInitializer);
 			this.setInitializerForClass(PickerList, pickerListInitializer);
 			this.setInitializerForClass(Header, headerInitializer);
 			this.setInitializerForClass(Header, headerWithoutBackgroundInitializer, Panel.DEFAULT_CHILD_NAME_HEADER);
+			this.setInitializerForClass(Header, headerWithoutBackgroundInitializer, Alert.DEFAULT_CHILD_NAME_HEADER);
 			this.setInitializerForClass(Callout, calloutInitializer);
+			this.setInitializerForClass(SimpleScrollBar, horizontalScrollBarInitializer, Scroller.DEFAULT_CHILD_NAME_HORIZONTAL_SCROLL_BAR);
+			this.setInitializerForClass(SimpleScrollBar, verticalScrollBarInitializer, Scroller.DEFAULT_CHILD_NAME_VERTICAL_SCROLL_BAR);
 			this.setInitializerForClass(List, listInitializer);
-			this.setInitializerForClass(List, nothingInitializer, PickerList.DEFAULT_CHILD_NAME_LIST);
 			this.setInitializerForClass(GroupedList, groupedListInitializer);
 			this.setInitializerForClass(GroupedList, insetGroupedListInitializer, GroupedList.ALTERNATE_NAME_INSET_GROUPED_LIST);
 			this.setInitializerForClass(Panel, panelInitializer);
-			this.setInitializerForClass(ScrollContainer, scrollContainerInitializer);
+			this.setInitializerForClass(Alert, alertInitializer);
+			this.setInitializerForClass(ScrollContainer, scrollContainerToolbarInitializer, ScrollContainer.ALTERNATE_NAME_TOOLBAR);
 		}
 
 		protected function pageIndicatorNormalSymbolFactory():DisplayObject
@@ -497,28 +537,6 @@ package feathers.themes
 			const image:ImageLoader = new ImageLoader();
 			image.textureScale = this.scale;
 			return image;
-		}
-
-		protected function horizontalScrollBarFactory():SimpleScrollBar
-		{
-			const scrollBar:SimpleScrollBar = new SimpleScrollBar();
-			scrollBar.direction = SimpleScrollBar.DIRECTION_HORIZONTAL;
-			const defaultSkin:Scale3Image = new Scale3Image(this.horizontalScrollBarThumbSkinTextures, this.scale);
-			defaultSkin.width = 10 * this.scale;
-			scrollBar.thumbProperties.defaultSkin = defaultSkin;
-			scrollBar.paddingRight = scrollBar.paddingBottom = scrollBar.paddingLeft = 4 * this.scale;
-			return scrollBar;
-		}
-
-		protected function verticalScrollBarFactory():SimpleScrollBar
-		{
-			const scrollBar:SimpleScrollBar = new SimpleScrollBar();
-			scrollBar.direction = SimpleScrollBar.DIRECTION_VERTICAL;
-			const defaultSkin:Scale3Image = new Scale3Image(this.verticalScrollBarThumbSkinTextures, this.scale);
-			defaultSkin.height = 10 * this.scale;
-			scrollBar.thumbProperties.defaultSkin = defaultSkin;
-			scrollBar.paddingTop = scrollBar.paddingRight = scrollBar.paddingBottom = 4 * this.scale;
-			return scrollBar;
 		}
 
 		protected function nothingInitializer(target:DisplayObject):void {}
@@ -553,30 +571,54 @@ package feathers.themes
 
 		protected function labelInitializer(label:Label):void
 		{
+			label.textRendererProperties.textFormat = this.lightTextFormat;
+			label.textRendererProperties.disabledTextFormat = this.disabledTextFormat;
+			label.textRendererProperties.embedFonts = true;
+		}
+
+		protected function headingLabelInitializer(label:Label):void
+		{
+			label.textRendererProperties.textFormat = this.largeLightTextFormat;
+			label.textRendererProperties.disabledTextFormat = this.largeDisabledTextFormat;
+			label.textRendererProperties.embedFonts = true;
+		}
+
+		protected function detailLabelInitializer(label:Label):void
+		{
 			label.textRendererProperties.textFormat = this.smallLightTextFormat;
+			label.textRendererProperties.disabledTextFormat = this.smallDisabledTextFormat;
+			label.textRendererProperties.embedFonts = true;
 		}
 
 		protected function itemRendererAccessoryLabelInitializer(renderer:TextFieldTextRenderer):void
 		{
-			renderer.textFormat = this.smallLightTextFormat;
+			renderer.textFormat = this.lightTextFormat;
+			renderer.embedFonts = true;
+		}
+
+		protected function alertMessageInitializer(renderer:TextFieldTextRenderer):void
+		{
+			renderer.wordWrap = true;
+			renderer.textFormat = this.lightTextFormat;
+			renderer.embedFonts = true;
 		}
 
 		protected function scrollTextInitializer(text:ScrollText):void
 		{
-			text.textFormat = this.smallLightTextFormat;
+			text.textFormat = this.lightTextFormat;
 			text.embedFonts = true;
 			text.paddingTop = text.paddingBottom = text.paddingLeft = 32 * this.scale;
 			text.paddingRight = 36 * this.scale;
-
-			text.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			text.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
 		}
 
 		protected function baseButtonInitializer(button:Button):void
 		{
-			button.defaultLabelProperties.textFormat = this.smallUIDarkTextFormat;
-			button.disabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
-			button.selectedDisabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
+			button.defaultLabelProperties.textFormat = this.darkUITextFormat;
+			button.defaultLabelProperties.embedFonts = true;
+			button.disabledLabelProperties.textFormat = this.darkUIDisabledTextFormat;
+			button.disabledLabelProperties.embedFonts = true;
+			button.selectedDisabledLabelProperties.textFormat = this.darkUIDisabledTextFormat;
+			button.selectedDisabledLabelProperties.embedFonts = true;
 
 			button.paddingTop = button.paddingBottom = 8 * this.scale;
 			button.paddingLeft = button.paddingRight = 16 * this.scale;
@@ -608,6 +650,38 @@ package feathers.themes
 			const skinSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
 			skinSelector.defaultValue = this.buttonCallToActionUpSkinTextures;
 			skinSelector.setValueForState(this.buttonCallToActionDownSkinTextures, Button.STATE_DOWN, false);
+			skinSelector.setValueForState(this.buttonDisabledSkinTextures, Button.STATE_DISABLED, false);
+			skinSelector.displayObjectProperties =
+			{
+				width: 60 * this.scale,
+				height: 60 * this.scale,
+				textureScale: this.scale
+			};
+			button.stateToSkinFunction = skinSelector.updateValue;
+			this.baseButtonInitializer(button);
+		}
+
+		protected function quietButtonInitializer(button:Button):void
+		{
+			const skinSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
+			skinSelector.defaultValue = this.buttonQuietUpSkinTextures;
+			skinSelector.setValueForState(this.buttonQuietDownSkinTextures, Button.STATE_DOWN, false);
+			skinSelector.setValueForState(this.buttonDisabledSkinTextures, Button.STATE_DISABLED, false);
+			skinSelector.displayObjectProperties =
+			{
+				width: 60 * this.scale,
+				height: 60 * this.scale,
+				textureScale: this.scale
+			};
+			button.stateToSkinFunction = skinSelector.updateValue;
+			this.baseButtonInitializer(button);
+		}
+
+		protected function dangerButtonInitializer(button:Button):void
+		{
+			const skinSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
+			skinSelector.defaultValue = this.buttonDangerUpSkinTextures;
+			skinSelector.setValueForState(this.buttonDangerDownSkinTextures, Button.STATE_DOWN, false);
 			skinSelector.setValueForState(this.buttonDisabledSkinTextures, Button.STATE_DISABLED, false);
 			skinSelector.displayObjectProperties =
 			{
@@ -670,8 +744,11 @@ package feathers.themes
 			button.stateToSkinFunction = skinSelector.updateValue;
 
 			button.defaultLabelProperties.textFormat = this.largeUIDarkTextFormat;
+			button.defaultLabelProperties.embedFonts = true;
 			button.disabledLabelProperties.textFormat = this.largeUIDisabledTextFormat;
+			button.disabledLabelProperties.embedFonts = true;
 			button.selectedDisabledLabelProperties.textFormat = this.largeUIDisabledTextFormat;
+			button.selectedDisabledLabelProperties.embedFonts = true;
 
 			button.paddingTop = button.paddingBottom = 8 * this.scale;
 			button.paddingLeft = button.paddingRight = 16 * this.scale;
@@ -680,12 +757,20 @@ package feathers.themes
 			button.minTouchWidth = button.minTouchHeight = 88 * this.scale;
 		}
 
+		protected function alertButtonGroupButtonInitializer(button:Button):void
+		{
+			this.buttonInitializer(button);
+			button.minWidth = 120 * this.scale;
+		}
+
 		protected function pickerListButtonInitializer(button:Button):void
 		{
 			this.buttonInitializer(button);
 
-			const defaultIcon:Image = new Image(this.pickerListButtonIconTexture);
-			defaultIcon.scaleX = defaultIcon.scaleY = this.scale;
+			const defaultIcon:ImageLoader = new ImageLoader();
+			defaultIcon.source = this.pickerListButtonIconTexture;
+			defaultIcon.textureScale = this.scale;
+			defaultIcon.snapToPixels = true;
 			button.defaultIcon = defaultIcon;
 
 			button.gap = Number.POSITIVE_INFINITY;
@@ -723,10 +808,14 @@ package feathers.themes
 			const selectedDisabledSkin:Scale9Image = new Scale9Image(this.tabSelectedDisabledSkinTextures, this.scale);
 			tab.selectedDisabledSkin = selectedDisabledSkin;
 
-			tab.defaultLabelProperties.textFormat = this.smallUILightTextFormat;
-			tab.defaultSelectedLabelProperties.textFormat = this.smallUIDarkTextFormat;
-			tab.disabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
-			tab.selectedDisabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
+			tab.defaultLabelProperties.textFormat = this.lightUITextFormat;
+			tab.defaultLabelProperties.embedFonts = true;
+			tab.defaultSelectedLabelProperties.textFormat = this.darkUITextFormat;
+			tab.defaultSelectedLabelProperties.embedFonts = true;
+			tab.disabledLabelProperties.textFormat = this.darkUIDisabledTextFormat;
+			tab.disabledLabelProperties.embedFonts = true;
+			tab.selectedDisabledLabelProperties.textFormat = this.darkUIDisabledTextFormat;
+			tab.selectedDisabledLabelProperties.embedFonts = true;
 
 			tab.paddingTop = tab.paddingBottom = 8 * this.scale;
 			tab.paddingLeft = tab.paddingRight = 16 * this.scale;
@@ -739,6 +828,19 @@ package feathers.themes
 		{
 			group.minWidth = 560 * this.scale;
 			group.gap = 18 * this.scale;
+		}
+
+		protected function alertButtonGroupInitializer(group:ButtonGroup):void
+		{
+			group.direction = ButtonGroup.DIRECTION_HORIZONTAL;
+			group.horizontalAlign = ButtonGroup.HORIZONTAL_ALIGN_CENTER;
+			group.verticalAlign = ButtonGroup.VERTICAL_ALIGN_JUSTIFY;
+			group.gap = 12 * this.scale;
+			group.paddingTop = 12 * this.scale;
+			group.paddingRight = 12 * this.scale;
+			group.paddingBottom = 12 * this.scale;
+			group.paddingLeft = 12 * this.scale;
+			group.customButtonName = COMPONENT_NAME_ALERT_BUTTON_GROUP_BUTTON;
 		}
 
 		protected function itemRendererInitializer(renderer:BaseDefaultItemRenderer):void
@@ -756,8 +858,11 @@ package feathers.themes
 			renderer.stateToSkinFunction = skinSelector.updateValue;
 
 			renderer.defaultLabelProperties.textFormat = this.largeLightTextFormat;
+			renderer.defaultLabelProperties.embedFonts = true;
 			renderer.downLabelProperties.textFormat = this.largeDarkTextFormat;
+			renderer.downLabelProperties.embedFonts = true;
 			renderer.defaultSelectedLabelProperties.textFormat = this.largeDarkTextFormat;
+			renderer.defaultSelectedLabelProperties.embedFonts = true;
 
 			renderer.horizontalAlign = Button.HORIZONTAL_ALIGN_LEFT;
 			renderer.paddingTop = renderer.paddingBottom = 8 * this.scale;
@@ -796,7 +901,9 @@ package feathers.themes
 			renderer.defaultIcon = defaultIcon;
 
 			renderer.defaultLabelProperties.textFormat = this.largeLightTextFormat;
+			renderer.defaultLabelProperties.embedFonts = true;
 			renderer.downLabelProperties.textFormat = this.largeDarkTextFormat;
+			renderer.downLabelProperties.embedFonts = true;
 
 			renderer.itemHasIcon = false;
 			renderer.horizontalAlign = Button.HORIZONTAL_ALIGN_LEFT;
@@ -826,8 +933,11 @@ package feathers.themes
 			renderer.stateToSkinFunction = skinSelector.updateValue;
 
 			renderer.defaultLabelProperties.textFormat = this.largeLightTextFormat;
+			renderer.defaultLabelProperties.embedFonts = true;
 			renderer.downLabelProperties.textFormat = this.largeDarkTextFormat;
+			renderer.downLabelProperties.embedFonts = true;
 			renderer.defaultSelectedLabelProperties.textFormat = this.largeDarkTextFormat;
+			renderer.defaultSelectedLabelProperties.embedFonts = true;
 
 			renderer.horizontalAlign = Button.HORIZONTAL_ALIGN_LEFT;
 			renderer.paddingTop = renderer.paddingBottom = 8 * this.scale;
@@ -870,7 +980,8 @@ package feathers.themes
 			renderer.backgroundSkin = defaultSkin;
 
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_LEFT;
-			renderer.contentLabelProperties.textFormat = this.smallUILightTextFormat;
+			renderer.contentLabelProperties.textFormat = this.lightUITextFormat;
+			renderer.contentLabelProperties.embedFonts = true;
 			renderer.paddingTop = renderer.paddingBottom = 4 * this.scale;
 			renderer.paddingLeft = renderer.paddingRight = 16 * this.scale;
 			renderer.minWidth = renderer.minHeight = 44 * this.scale;
@@ -885,7 +996,8 @@ package feathers.themes
 			renderer.backgroundSkin = defaultSkin;
 
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_CENTER;
-			renderer.contentLabelProperties.textFormat = this.smallLightTextFormat;
+			renderer.contentLabelProperties.textFormat = this.lightTextFormat;
+			renderer.contentLabelProperties.embedFonts = true;
 			renderer.paddingTop = renderer.paddingBottom = 4 * this.scale;
 			renderer.paddingLeft = renderer.paddingRight = 16 * this.scale;
 			renderer.minWidth = renderer.minHeight = 44 * this.scale;
@@ -901,7 +1013,8 @@ package feathers.themes
 			renderer.backgroundSkin = defaultSkin;
 
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_LEFT;
-			renderer.contentLabelProperties.textFormat = this.smallUILightTextFormat;
+			renderer.contentLabelProperties.textFormat = this.lightUITextFormat;
+			renderer.contentLabelProperties.embedFonts = true;
 			renderer.paddingTop = renderer.paddingBottom = 4 * this.scale;
 			renderer.paddingLeft = renderer.paddingRight = 32 * this.scale;
 			renderer.minWidth = renderer.minHeight = 66 * this.scale;
@@ -917,7 +1030,8 @@ package feathers.themes
 			renderer.backgroundSkin = defaultSkin;
 
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_CENTER;
-			renderer.contentLabelProperties.textFormat = this.smallLightTextFormat;
+			renderer.contentLabelProperties.textFormat = this.lightTextFormat;
+			renderer.contentLabelProperties.embedFonts = true;
 			renderer.paddingTop = renderer.paddingBottom = 4 * this.scale;
 			renderer.paddingLeft = renderer.paddingRight = 32 * this.scale;
 			renderer.minWidth = renderer.minHeight = 66 * this.scale;
@@ -942,9 +1056,12 @@ package feathers.themes
 			};
 			radio.stateToIconFunction = iconSelector.updateValue;
 
-			radio.defaultLabelProperties.textFormat = this.smallUILightTextFormat;
-			radio.disabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
-			radio.selectedDisabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
+			radio.defaultLabelProperties.textFormat = this.lightUITextFormat;
+			radio.defaultLabelProperties.embedFonts = true;
+			radio.disabledLabelProperties.textFormat = this.lightUIDisabledTextFormat;
+			radio.disabledLabelProperties.embedFonts = true;
+			radio.selectedDisabledLabelProperties.textFormat = this.lightUIDisabledTextFormat;
+			radio.selectedDisabledLabelProperties.embedFonts = true;
 
 			radio.gap = 8 * this.scale;
 			radio.minTouchWidth = radio.minTouchHeight = 88 * this.scale;
@@ -966,9 +1083,12 @@ package feathers.themes
 			};
 			check.stateToIconFunction = iconSelector.updateValue;
 
-			check.defaultLabelProperties.textFormat = this.smallUILightTextFormat;
-			check.disabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
-			check.selectedDisabledLabelProperties.textFormat = this.smallUIDisabledTextFormat;
+			check.defaultLabelProperties.textFormat = this.lightUITextFormat;
+			check.defaultLabelProperties.embedFonts = true;
+			check.disabledLabelProperties.textFormat = this.lightUIDisabledTextFormat;
+			check.disabledLabelProperties.embedFonts = true;
+			check.selectedDisabledLabelProperties.textFormat = this.lightUIDisabledTextFormat;
+			check.selectedDisabledLabelProperties.embedFonts = true;
 
 			check.gap = 8 * this.scale;
 			check.minTouchWidth = check.minTouchHeight = 88 * this.scale;
@@ -1004,34 +1124,78 @@ package feathers.themes
 		{
 			toggle.trackLayoutMode = ToggleSwitch.TRACK_LAYOUT_MODE_SINGLE;
 
-			toggle.defaultLabelProperties.textFormat = this.smallUILightTextFormat;
-			toggle.onLabelProperties.textFormat = this.smallUISelectedTextFormat;
+			toggle.defaultLabelProperties.textFormat = this.lightUITextFormat;
+			toggle.defaultLabelProperties.embedFonts = true;
+			toggle.onLabelProperties.textFormat = this.selectedUITextFormat;
+			toggle.onLabelProperties.embedFonts = true;
+		}
+
+		protected function numericStepperInitializer(stepper:NumericStepper):void
+		{
+			stepper.buttonLayoutMode = NumericStepper.BUTTON_LAYOUT_MODE_SPLIT_HORIZONTAL;
+			stepper.incrementButtonLabel = "+";
+			stepper.decrementButtonLabel = "-";
+		}
+
+		protected function horizontalScrollBarInitializer(scrollBar:SimpleScrollBar):void
+		{
+			scrollBar.direction = SimpleScrollBar.DIRECTION_HORIZONTAL;
+			const defaultSkin:Scale3Image = new Scale3Image(this.horizontalScrollBarThumbSkinTextures, this.scale);
+			defaultSkin.width = 10 * this.scale;
+			scrollBar.thumbProperties.defaultSkin = defaultSkin;
+			scrollBar.paddingRight = scrollBar.paddingBottom = scrollBar.paddingLeft = 4 * this.scale;
+		}
+
+		protected function verticalScrollBarInitializer(scrollBar:SimpleScrollBar):void
+		{
+			scrollBar.direction = SimpleScrollBar.DIRECTION_VERTICAL;
+			const defaultSkin:Scale3Image = new Scale3Image(this.verticalScrollBarThumbSkinTextures, this.scale);
+			defaultSkin.height = 10 * this.scale;
+			scrollBar.thumbProperties.defaultSkin = defaultSkin;
+			scrollBar.paddingTop = scrollBar.paddingRight = scrollBar.paddingBottom = 4 * this.scale;
+		}
+
+		protected function baseTextInputInitializer(input:TextInput):void
+		{
+			var skinSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
+			skinSelector.defaultValue = this.backgroundInsetSkinTextures;
+			skinSelector.setValueForState(this.backgroundDisabledSkinTextures, TextInput.STATE_DISABLED);
+			skinSelector.setValueForState(this.backgroundFocusedSkinTextures, TextInput.STATE_FOCUSED);
+			skinSelector.displayObjectProperties =
+			{
+				width: 264 * this.scale,
+				height: 60 * this.scale,
+				textureScale: this.scale
+			};
+			input.stateToSkinFunction = skinSelector.updateValue;
+
+			input.minWidth = input.minHeight = 60 * this.scale;
+			input.minTouchWidth = input.minTouchHeight = 88 * this.scale;
+			input.gap = 12 * this.scale;
+			input.paddingTop = 12 * this.scale;
+			input.paddingBottom = 10 * this.scale;
+			input.paddingLeft = input.paddingRight = 14 * this.scale;
+			input.textEditorProperties.fontFamily = "Helvetica";
+			input.textEditorProperties.fontSize = 24 * this.scale;
+			input.textEditorProperties.color = LIGHT_TEXT_COLOR;
+
+			input.promptProperties.textFormat = this.lightTextFormat;
+			input.promptProperties.embedFonts = true;
 		}
 
 		protected function textInputInitializer(input:TextInput):void
 		{
-			const backgroundSkin:Scale9Image = new Scale9Image(this.backgroundSkinTextures, this.scale);
-			backgroundSkin.width = 264 * this.scale;
-			backgroundSkin.height = 60 * this.scale;
-			input.backgroundSkin = backgroundSkin;
+			this.baseTextInputInitializer(input);
+		}
 
-			const backgroundDisabledSkin:Scale9Image = new Scale9Image(this.backgroundDisabledSkinTextures, this.scale);
-			backgroundDisabledSkin.width = 264 * this.scale;
-			backgroundDisabledSkin.height = 60 * this.scale;
-			input.backgroundDisabledSkin = backgroundDisabledSkin;
+		protected function searchTextInputInitializer(input:TextInput):void
+		{
+			this.baseTextInputInitializer(input);
 
-			const backgroundFocusedSkin:Scale9Image = new Scale9Image(this.backgroundFocusedSkinTextures, this.scale);
-			backgroundFocusedSkin.width = 264 * this.scale;
-			backgroundFocusedSkin.height = 60 * this.scale;
-			input.backgroundFocusedSkin = backgroundFocusedSkin;
-
-			input.minWidth = input.minHeight = 60 * this.scale;
-			input.minTouchWidth = input.minTouchHeight = 88 * this.scale;
-			input.paddingTop = input.paddingBottom = 12 * this.scale;
-			input.paddingLeft = input.paddingRight = 16 * this.scale;
-			input.textEditorProperties.fontFamily = "Helvetica";
-			input.textEditorProperties.fontSize = 30 * this.scale;
-			input.textEditorProperties.color = LIGHT_TEXT_COLOR;
+			var searchIcon:ImageLoader = new ImageLoader();
+			searchIcon.source = this.searchIconTexture;
+			searchIcon.snapToPixels = true;
+			input.defaultIcon = searchIcon;
 		}
 
 		protected function numericStepperTextInputInitializer(input:TextInput):void
@@ -1053,11 +1217,14 @@ package feathers.themes
 
 			input.minWidth = input.minHeight = 60 * this.scale;
 			input.minTouchWidth = input.minTouchHeight = 88 * this.scale;
-			input.paddingTop = input.paddingBottom = 12 * this.scale;
-			input.paddingLeft = input.paddingRight = 16 * this.scale;
-			input.textEditorProperties.fontFamily = "Helvetica";
-			input.textEditorProperties.fontSize = 30 * this.scale;
-			input.textEditorProperties.color = LIGHT_TEXT_COLOR;
+			input.gap = 12 * this.scale;
+			input.paddingTop = 12 * this.scale;
+			input.paddingBottom = 10 * this.scale;
+			input.paddingLeft = input.paddingRight = 14 * this.scale;
+			input.isEditable = false;
+			input.textEditorFactory = stepperTextEditorFactory;
+			input.textEditorProperties.textFormat = this.lightCenteredUITextFormat;
+			input.textEditorProperties.embedFonts = true;
 		}
 
 		protected function pageIndicatorInitializer(pageIndicator:PageIndicator):void
@@ -1102,19 +1269,22 @@ package feathers.themes
 			header.gap = 8 * this.scale;
 			header.titleGap = 12 * this.scale;
 
-			const backgroundSkin:Quad = new Quad(88 * this.scale, 88 * this.scale, HEADER_BACKGROUND_COLOR);
+			const backgroundSkin:TiledImage = new TiledImage(this.headerBackgroundSkinTexture, this.scale);
+			backgroundSkin.width = backgroundSkin.height = 88 * this.scale;
 			header.backgroundSkin = backgroundSkin;
 			header.titleProperties.textFormat = this.headerTextFormat;
+			header.titleProperties.embedFonts = true;
 		}
 
 		protected function headerWithoutBackgroundInitializer(header:Header):void
 		{
 			header.minWidth = 88 * this.scale;
 			header.minHeight = 88 * this.scale;
-			header.paddingTop = header.paddingRight = header.paddingBottom =
-				header.paddingLeft = 14 * this.scale;
+			header.paddingTop = header.paddingBottom = 14 * this.scale;
+			header.paddingLeft = header.paddingRight = 18 * this.scale;
 
 			header.titleProperties.textFormat = this.headerTextFormat;
+			header.titleProperties.embedFonts = true;
 		}
 
 		protected function pickerListInitializer(list:PickerList):void
@@ -1140,8 +1310,6 @@ package feathers.themes
 				layout.paddingLeft = 0;
 			list.listProperties.layout = layout;
 			list.listProperties.verticalScrollPolicy = List.SCROLL_POLICY_ON;
-			list.listProperties.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			list.listProperties.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
 
 			if(DeviceCapabilities.isTablet(Starling.current.nativeStage))
 			{
@@ -1164,6 +1332,7 @@ package feathers.themes
 		protected function calloutInitializer(callout:Callout):void
 		{
 			const backgroundSkin:Scale9Image = new Scale9Image(this.backgroundPopUpSkinTextures, this.scale);
+			backgroundSkin.height = 88 * this.scale;
 			callout.backgroundSkin = backgroundSkin;
 
 			const topArrowSkin:Image = new Image(this.calloutTopArrowSkinTexture);
@@ -1187,40 +1356,56 @@ package feathers.themes
 
 		protected function panelInitializer(panel:Panel):void
 		{
-			const backgroundSkin:Scale9Image = new Scale9Image(this.backgroundDisabledSkinTextures, this.scale);
+			const backgroundSkin:Scale9Image = new Scale9Image(this.backgroundPopUpSkinTextures, this.scale);
 			panel.backgroundSkin = backgroundSkin;
 
 			panel.paddingTop = 0;
 			panel.paddingRight = 8 * this.scale;
 			panel.paddingBottom = 8 * this.scale;
 			panel.paddingLeft = 8 * this.scale;
+		}
 
-			panel.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			panel.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
+		protected function alertInitializer(alert:Alert):void
+		{
+			const backgroundSkin:Scale9Image = new Scale9Image(this.backgroundPopUpSkinTextures, this.scale);
+			alert.backgroundSkin = backgroundSkin;
+
+			alert.paddingTop = 0;
+			alert.paddingRight = 24 * this.scale;
+			alert.paddingBottom = 16 * this.scale;
+			alert.paddingLeft = 24 * this.scale;
+			alert.gap = 16 * this.scale;
+			alert.maxWidth = alert.maxHeight = 560 * this.scale;
 		}
 
 		protected function listInitializer(list:List):void
 		{
-			const backgroundSkin:Quad = new Quad(100, 100, LIST_BACKGROUND_COLOR);
+			const backgroundSkin:Quad = new Quad(88 * this.scale, 88 * this.scale, LIST_BACKGROUND_COLOR);
 			list.backgroundSkin = backgroundSkin;
-
-			list.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			list.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
 		}
 
 		protected function groupedListInitializer(list:GroupedList):void
 		{
-			const backgroundSkin:Quad = new Quad(100, 100, LIST_BACKGROUND_COLOR);
+			const backgroundSkin:Quad = new Quad(88 * this.scale, 88 * this.scale, LIST_BACKGROUND_COLOR);
 			list.backgroundSkin = backgroundSkin;
-
-			list.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			list.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
 		}
 
-		protected function scrollContainerInitializer(container:ScrollContainer):void
+		protected function scrollContainerToolbarInitializer(container:ScrollContainer):void
 		{
-			container.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			container.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
+			if(!container.layout)
+			{
+				const layout:HorizontalLayout = new HorizontalLayout();
+				layout.paddingTop = layout.paddingRight = layout.paddingBottom =
+					layout.paddingLeft = 14 * this.scale;
+				layout.gap = 8 * this.scale;
+				container.layout = layout;
+			}
+			container.minWidth = 88 * this.scale;
+			container.minHeight = 88 * this.scale;
+
+			const backgroundSkin:TiledImage = new TiledImage(this.headerBackgroundSkinTexture, this.scale);
+			backgroundSkin.width = backgroundSkin.height = 88 * this.scale;
+			container.backgroundSkin = backgroundSkin;
 		}
 
 		protected function insetGroupedListInitializer(list:GroupedList):void
@@ -1238,30 +1423,13 @@ package feathers.themes
 			layout.gap = 0;
 			layout.horizontalAlign = VerticalLayout.HORIZONTAL_ALIGN_JUSTIFY;
 			layout.verticalAlign = VerticalLayout.VERTICAL_ALIGN_TOP;
+			layout.manageVisibility = true;
 			list.layout = layout;
-
-			list.verticalScrollBarFactory = this.verticalScrollBarFactory;
-			list.horizontalScrollBarFactory = this.horizontalScrollBarFactory;
-		}
-
-		protected function stage_resizeHandler(event:ResizeEvent):void
-		{
-			this.primaryBackground.width = event.width;
-			this.primaryBackground.height = event.height;
 		}
 
 		protected function root_addedToStageHandler(event:Event):void
 		{
-			this.root.removeEventListener(Event.ADDED_TO_STAGE, root_addedToStageHandler);
 			this.initializeRoot();
-		}
-
-		protected function root_removedFromStageHandler(event:Event):void
-		{
-			this.root.removeEventListener(Event.REMOVED_FROM_STAGE, root_removedFromStageHandler);
-			this.root.stage.removeEventListener(ResizeEvent.RESIZE, stage_resizeHandler);
-			this.root.removeChild(this.primaryBackground, true);
-			this.primaryBackground = null;
 		}
 
 	}
