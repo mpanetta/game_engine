@@ -63,11 +63,10 @@ package com.engine
       setupStage();
       Starling.handleLostContext = true;
 
-      var starling:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode);
+      var viewPort:Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
+      var starling:Starling = new Starling(StarlingDisplay, stage, viewPort, null, _opts.render_mode);
       (starling as Starling).antiAliasing = _opts.antialiasing;
       (starling as Starling).start();
-
-      Starling.current.viewPort = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
 
       _flashDisplay = (starling as Starling).nativeOverlay;
     }
