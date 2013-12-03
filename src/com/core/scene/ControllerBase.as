@@ -3,6 +3,7 @@ namespace scene;
 package com.core.scene
 {
   import com.core.error.ErrorBase;
+  import com.core.namespaces.scene_api;
   import com.core.namespaces.scene_message;
   import com.util.eventTypesFor;
   import com.util.methodForEvent;
@@ -14,6 +15,7 @@ package com.core.scene
   import avmplus.getQualifiedClassName;
 
   use namespace scene_message;
+  use namespace scene_api;
 
   public class ControllerBase extends EventDispatcher implements IController
   {

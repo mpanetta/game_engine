@@ -7,6 +7,7 @@ package com.core.scene
   import flash.geom.Rectangle;
 
   import feathers.controls.Button;
+  import feathers.controls.TextInput;
 
   import starling.display.Sprite;
   import starling.events.Event;
@@ -81,14 +82,29 @@ package com.core.scene
     }
 
     protected function createButton(handler:Function, opts:Object):Button {
-      var button:Button = starlingView.addChild(new Button()) as Button;
+      var button:Button = new Button();
+      starlingView.addChild(button);
       setDimensions(button, opts.dimensions);
 
       button.label = opts.hasOwnProperty('label') ? opts.label : "";
+      if(button.hasEventListener(Event.TRIGGERED))
+        throw new Error("WTF");
       if(handler)
         button.addEventListener(Event.TRIGGERED, handler);
 
       return button;
+    }
+
+    protected function createTextField(opts:Object):TextInput {
+      var field:TextInput = starlingView.addChild(new TextInput()) as TextInput;
+      setDimensions(field, opts.dimensions);
+
+      field.textEditorProperties.textAlign = "center";
+      field.textEditorProperties.maxChars = 255;
+
+      if(opts.text) field.textEditorProperties.text = opts.text;
+
+      return field;
     }
 
     //
