@@ -1,13 +1,12 @@
 package com.core.scene
 {
-  import avmplus.getQualifiedClassName;
-
   import com.core.messageBus.MessageBus;
   import com.engine.RootDisplay;
 
   import flash.events.EventDispatcher;
-  import flash.geom.Rectangle;
   import flash.utils.getDefinitionByName;
+
+  import avmplus.getQualifiedClassName;
 
   public class SceneManager extends EventDispatcher
   {
@@ -46,6 +45,8 @@ package com.core.scene
     // Getters and setters.
     //
 
+    public function get width():int { return _rootDisplay.stage.stageWidth; }
+    public function get height():int { return _rootDisplay.stage.stageHeight; }
     public function get currentScene():IScene { return _scene; }
 
     //
@@ -129,10 +130,6 @@ package com.core.scene
       _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish, false, 0, true);
 
       _rootDisplay.starlingDisplay.addScene(_scene);
-    }
-
-    private function resize(rect:Rectangle):void {
-      _scene.resize(rect);
     }
 
     //

@@ -58,6 +58,8 @@ package com.engine
 
     public function get sceneManager():SceneManager { return _sceneManager; }
     public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
+    public function get width():int { return sceneManager.width; }
+    public function get height():int { return sceneManager.height; }
 
     //
     // Public methods.

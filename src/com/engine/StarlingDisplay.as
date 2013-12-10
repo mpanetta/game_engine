@@ -4,7 +4,6 @@ package com.engine
   import com.core.scene.IScene;
 
   import flash.events.EventDispatcher;
-  import flash.geom.Point;
   import flash.geom.Rectangle;
 
   import starling.core.Starling;
@@ -86,6 +85,7 @@ package com.engine
       stage.addEventListener(ResizeEvent.RESIZE, stage_resize);
 
       createLayers();
+      resize(stage.stageWidth, stage.stageHeight);
       dispatchInitComplete();
     }
 
@@ -95,6 +95,12 @@ package com.engine
 
       stage.stageWidth = width;
       stage.stageHeight = height;
+
+      _sceneLayer.width = width;
+      _sceneLayer.height = height;
+
+      if(_sceneLayer.numChildren > 0)
+        (_sceneLayer.getChildAt(0) as IScene).resize(width, height)
     }
 
     private function createLayers():void {

@@ -1,7 +1,6 @@
 package com.core.scene
 {
   import flash.events.IEventDispatcher;
-  import flash.geom.Rectangle;
 
   import starling.display.Sprite;
 
@@ -12,7 +11,10 @@ package com.core.scene
     function get disposed():Boolean;
     function get starlingView():Sprite;
 
-    function resize(rectangle:Rectangle):void;
+    function get width():int;
+    function get height():int;
+
+    function resize(w:int, h:int):void;
     function setScene():void;
   }
 }

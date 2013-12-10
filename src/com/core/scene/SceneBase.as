@@ -4,7 +4,6 @@ package com.core.scene
   import com.core.error.ErrorBase;
 
   import flash.events.EventDispatcher;
-  import flash.geom.Rectangle;
 
   import feathers.controls.Button;
   import feathers.controls.TextInput;
@@ -29,6 +28,8 @@ package com.core.scene
     private var _starlingView:Sprite = new Sprite();
     private var _listeners:Hash = new Hash();
     private var _buttons:Array = [];
+    private var _width:int;
+    private var _height:int;
 
     //
     // Constructors.
@@ -58,19 +59,24 @@ package com.core.scene
     public function get disposed():Boolean { return _disposed; }
     public function get starlingView():Sprite { return _starlingView; }
 
+    public function get width():int { return _width; }
+    public function get height():int { return _height; }
+
     protected function get buttons():Array { return _buttons; }
 
     //
     // Public methods.
     //
 
-    public function resize(rectangle:Rectangle):void {
+    public function resize(w:int, h:int):void {
+      starlingView.width = w;
+      starlingView.height = h;
+
+      _width = w;
+      _height = h;
     }
 
     public function setScene():void {
-      starlingView.width = 500; //starlingView.stage.stageWidth;
-      starlingView.height = 375; //starlingView.stage.stageHeight;
-
       load();
     }
 
@@ -155,12 +161,17 @@ package com.core.scene
       _listeners = null;
     }
 
+    private function setSize():void {
+      _starlingView.width = _starlingView.parent.width;
+      _starlingView.height = _starlingView.parent.height;
+    }
+
     //
     // Event handlers.
     //
 
     private function starlingView_addedToStage(event:Event):void {
-
+      setSize();
     }
   }
 }
