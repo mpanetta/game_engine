@@ -28,6 +28,7 @@ package com.core.scene
     private var _data:Object;
     private var _starlingView:Sprite = new Sprite();
     private var _listeners:Hash = new Hash();
+    private var _buttons:Array = [];
 
     //
     // Constructors.
@@ -45,6 +46,8 @@ package com.core.scene
       unregister();
 
       clearUIListeners();
+
+      _buttons = null;
       _count--;
     }
 
@@ -54,6 +57,8 @@ package com.core.scene
 
     public function get disposed():Boolean { return _disposed; }
     public function get starlingView():Sprite { return _starlingView; }
+
+    protected function get buttons():Array { return _buttons; }
 
     //
     // Public methods.
@@ -83,14 +88,14 @@ package com.core.scene
 
     protected function createButton(handler:Function, opts:Object):Button {
       var button:Button = new Button();
+      _buttons.push(button);
+
       starlingView.addChild(button);
       setDimensions(button, opts.dimensions);
 
       button.label = opts.hasOwnProperty('label') ? opts.label : "";
-      if(button.hasEventListener(Event.TRIGGERED))
-        throw new Error("WTF");
       if(handler)
-        button.addEventListener(Event.TRIGGERED, handler);
+        addUIListener(button, Event.TRIGGERED, handler);
 
       return button;
     }
