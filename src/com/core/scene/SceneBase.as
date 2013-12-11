@@ -8,6 +8,7 @@ package com.core.scene
   import feathers.controls.Button;
   import feathers.controls.TextInput;
 
+  import starling.display.DisplayObject;
   import starling.display.Sprite;
   import starling.events.Event;
 
@@ -30,6 +31,7 @@ package com.core.scene
     private var _buttons:Array = [];
     private var _width:int;
     private var _height:int;
+    private var _layers:Hash = new Hash();
 
     //
     // Constructors.
@@ -46,6 +48,7 @@ package com.core.scene
       disposeCheck();
       unregister();
 
+      clearLayers();
       clearUIListeners();
 
       _buttons = null;
@@ -69,8 +72,8 @@ package com.core.scene
     //
 
     public function resize(w:int, h:int):void {
-      starlingView.width = w;
-      starlingView.height = h;
+      _starlingView.width = w;
+      _starlingView.height = h;
 
       _width = w;
       _height = h;
@@ -92,11 +95,11 @@ package com.core.scene
       dispatchEvent(new SceneMessage(SceneMessage.SCENE_CHANGE_FINISH, {}));
     }
 
-    protected function createButton(handler:Function, opts:Object):Button {
+    protected function createButton(handler:Function, index:int, opts:Object):Button {
       var button:Button = new Button();
       _buttons.push(button);
 
-      starlingView.addChild(button);
+      addChild(button, index);
       setDimensions(button, opts.dimensions);
 
       button.label = opts.hasOwnProperty('label') ? opts.label : "";
@@ -106,8 +109,8 @@ package com.core.scene
       return button;
     }
 
-    protected function createTextField(opts:Object):TextInput {
-      var field:TextInput = starlingView.addChild(new TextInput()) as TextInput;
+    protected function createTextField(index:int, opts:Object):TextInput {
+      var field:TextInput = addChild(new TextInput(), index) as TextInput;
       setDimensions(field, opts.dimensions);
 
       field.textEditorProperties.textAlign = "center";
@@ -116,6 +119,30 @@ package com.core.scene
       if(opts.text) field.textEditorProperties.text = opts.text;
 
       return field;
+    }
+
+    protected function addChild(child:DisplayObject, index:int=1):DisplayObject {
+      var layer:Layer = findOrCreateLayer(index);
+
+      return layer.addChild(child);
+    }
+
+    private function findOrCreateLayer(index:int):Layer {
+      var layer:Layer = _layers[index];
+      if(!layer) {
+        layer = createLayer(index);
+        _layers[index] = layer;
+      }
+
+      return layer;
+    }
+
+    private function createLayer(index:int):Layer {
+      var layer:Layer = new Layer(index);
+      _starlingView.addChild(layer);
+      _starlingView.sortChildren(function(a:Layer, b:Layer):Boolean { return a.index > b.index; });
+
+      return layer;
     }
 
     //
@@ -148,6 +175,11 @@ package com.core.scene
         _listeners[target] = []
 
       _listeners[target].push({ type:type, listener:listener });
+    }
+
+    private function clearLayers():void {
+      _layers.clear();
+      _layers = null;
     }
 
     private function clearUIListeners():void {
