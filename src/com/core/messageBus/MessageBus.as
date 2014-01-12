@@ -74,7 +74,7 @@ package com.core.messageBus
     public function addForClass(target:EventDispatcher, eventClass:Class, weak:Boolean=false):void {
       var constants:Array = eventTypesFor(eventClass);
 
-      for each (var type:String in constants) {
+      for each(var type:String in constants) {
         MessageBus.instance.add(target, eventClass[type], weak);
       }
     }

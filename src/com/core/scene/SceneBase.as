@@ -2,6 +2,9 @@ package com.core.scene
 {
   import com.core.dataStructures.Hash;
   import com.core.error.ErrorBase;
+  import com.core.namespaces.scene_message;
+  import com.util.eventTypesFor;
+  import com.util.methodForEvent;
 
   import flash.events.EventDispatcher;
 
@@ -11,6 +14,8 @@ package com.core.scene
   import starling.display.DisplayObject;
   import starling.display.Sprite;
   import starling.events.Event;
+
+  use namespace scene_message;
 
   public class SceneBase extends EventDispatcher implements IScene
   {
@@ -127,22 +132,26 @@ package com.core.scene
       return layer.addChild(child);
     }
 
-    private function findOrCreateLayer(index:int):Layer {
-      var layer:Layer = _layers[index];
-      if(!layer) {
-        layer = createLayer(index);
-        _layers[index] = layer;
+    protected function registerMessageClass(messageClass:Class, target:ViewBase, targetName:String):void {
+      var eventTypes:Array = eventTypesFor(messageClass);
+      var listenerName:String = "";
+      for each(var type:String in eventTypes) {
+        listenerName = targetName + '_' + methodForEvent(type);
+        try {
+          target.addListener((messageClass as Object)[type], (this as Object)[listenerName]);
+        } catch(error:Error) {
+        }
       }
-
-      return layer;
     }
 
-    private function createLayer(index:int):Layer {
-      var layer:Layer = new Layer(index);
-      _starlingView.addChild(layer);
-      _starlingView.sortChildren(function(a:Layer, b:Layer):Boolean { return a.index > b.index; });
+    protected function unregisterMessageClass(messageClass, target:ViewBase, targetName:String):void {
+      var eventTypes:Array = eventTypesFor(messageClass);
+      var listenerName:String = "";
+      for each(var type:String in eventTypes) {
+        listenerName = targetName + '_' + methodForEvent(type);
 
-      return layer;
+        target.removeListener((messageClass as Object)[type], (this as Object)[listenerName]);
+      }
     }
 
     //
@@ -197,6 +206,25 @@ package com.core.scene
       _starlingView.width = _starlingView.parent.width;
       _starlingView.height = _starlingView.parent.height;
     }
+
+    private function findOrCreateLayer(index:int):Layer {
+      var layer:Layer = _layers[index];
+      if(!layer) {
+        layer = createLayer(index);
+        _layers[index] = layer;
+      }
+
+      return layer;
+    }
+
+    private function createLayer(index:int):Layer {
+      var layer:Layer = new Layer(index);
+      _starlingView.addChild(layer);
+      _starlingView.sortChildren(function(a:Layer, b:Layer):Boolean { return a.index > b.index; });
+
+      return layer;
+    }
+
 
     //
     // Event handlers.

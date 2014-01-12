@@ -60,20 +60,20 @@ package com.core.fsm
 
       var transition:Object = _transitions[startState];
 
-      if(transition.events.event)
-        throw new FsmError(FsmError.ALREADY_REGISTERED_TRANSITION, "event: " + event + ", startState: " + startState + ", endState: endState");
+      if(transition.events[event])
+        throw new FsmError(FsmError.ALREADY_REGISTERED_TRANSITION, "event: " + event + ", startState: " + startState + ", endState: " + endState);
 
-      transition.events.event = endState;
+      transition.events[event] = endState;
     }
 
-    public function registerCallback(state:String, func:Function):void {
-      var transition:Object = _transitions[state];
+    public function registerCallback(callbackState:String, func:Function):void {
+      var transition:Object = _transitions[callbackState];
       if(!transition)
-        transition = createState(state);
+        transition = createState(callbackState);
 
       var callbacks:Set = transition.callbacks;
       if(callbacks.contains(func))
-        throw new FsmError(FsmError.CALLBACK_ALREADY_REGISTERED, "state: " + state);
+        throw new FsmError(FsmError.CALLBACK_ALREADY_REGISTERED, "state: " + callbackState);
 
       callbacks.add(func);
     }
@@ -83,13 +83,13 @@ package com.core.fsm
       if(!transition)
         throw new FsmError(FsmError.BAD_STATE, "state: " + state);
 
-      var toState:String = transition.events.event;
+      var toState:String = transition.events[event];
       if(!toState)
         throw new FsmError(FsmError.NO_EVENT, "state: " + state + " event: " + event);
 
       _state = toState;
 
-      executeCallbacks(transition.callbacks.values);
+      executeCallbacks();
     }
 
     //
@@ -103,7 +103,12 @@ package com.core.fsm
       return transition;
     }
 
-    private function executeCallbacks(callbacks:Array):void {
+    private function executeCallbacks():void {
+      var transition:Object = _transitions[_state];
+      if(!transition)
+        throw new FsmError(FsmError.BAD_STATE, "state: " + _state);
+
+      var callbacks:Array = transition.callbacks.values;
       for each(var callback:Function in callbacks) {
         callback.apply();
       }

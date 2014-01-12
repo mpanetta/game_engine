@@ -56,6 +56,8 @@ package com.engine
     // Getters and setters.
     //
 
+    public static function sceneManager():SceneManager { return _instance.sceneManager; }
+
     public function get sceneManager():SceneManager { return _sceneManager; }
     public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
     public function get width():int { return sceneManager.width; }

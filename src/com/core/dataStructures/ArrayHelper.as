@@ -35,10 +35,10 @@ package com.core.dataStructures
       var flattened:Array = [];
 
       for each(var obj:Object in array)
-      if(obj is Array)
-        flattened = flattened.concat(flatten(obj as Array, levels - 1));
-      else
-        flattened.push(obj);
+        if(obj is Array)
+          flattened = flattened.concat(flatten(obj as Array, levels - 1));
+        else
+          flattened.push(obj);
 
       return flattened;
     }
@@ -64,7 +64,7 @@ package com.core.dataStructures
       var fn:Function = toProc(attr);
 
       for each(var elem:Object in array)
-      fn(elem);
+        fn(elem);
     }
 
     public static function eachWithIndex(array:Array, attr:Object):void {
@@ -80,7 +80,7 @@ package com.core.dataStructures
       var collected:Array = [];
 
       for each(var elem:Object in array)
-      collected.push(fn(elem));
+        collected.push(fn(elem));
 
       return collected;
     }
@@ -89,8 +89,8 @@ package com.core.dataStructures
       var fn:Function = toProc(attr);
 
       for each(var elem:Object in array)
-      if(fn != null ? !fn(elem) : !elem)
-        return false;
+        if(fn != null ? !fn(elem) : !elem)
+          return false;
 
       return true;
     }
@@ -99,8 +99,8 @@ package com.core.dataStructures
       var fn:Function = toProc(attr);
 
       for each(var elem:Object in array)
-      if(fn != null ? fn(elem) : elem)
-        return true;
+        if(fn != null ? fn(elem) : elem)
+          return true;
 
       return false;
     }
@@ -121,8 +121,8 @@ package com.core.dataStructures
       var collected:Array = [];
 
       for each(var elem:Object in array)
-      if(fn(elem))
-        collected.push(elem);
+        if(fn(elem))
+          collected.push(elem);
 
       return collected;
     }
@@ -140,7 +140,7 @@ package com.core.dataStructures
       var fn:Function = toProc(attr);
 
       for each(var elem:Object in array)
-      acc = fn(acc, elem);
+        acc = fn(acc, elem);
 
       return acc;
     }
@@ -151,7 +151,7 @@ package com.core.dataStructures
       var count:int = 0;
 
       for each(var elem:Object in array)
-      count += (fn != null ? fn(elem) : elem);
+        count += (fn != null ? fn(elem) : elem);
 
       return count;
     }

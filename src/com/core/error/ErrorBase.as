@@ -14,6 +14,7 @@ package com.core.error
     public static const UNINITIALIZED:String = "Object must be intialized before using";
     public static const MULTIPLE_INITIALIZE:String = "Object has already been intialized and cannot be initialized again";
     public static const ABSTRACT_METHOD:String = "Method must be overriden in derived class";
+    public static const LISTENERS_NOT_REMOVED:String = "Attmepting to dispose object while listeners are still attached";
 
     //
     // Constructors.
