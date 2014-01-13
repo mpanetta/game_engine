@@ -98,9 +98,6 @@ package com.engine
 
       _sceneLayer.width = width;
       _sceneLayer.height = height;
-
-      if(_sceneLayer.numChildren > 0)
-        (_sceneLayer.getChildAt(0) as IScene).resize(width, height)
     }
 
     private function createLayers():void {
