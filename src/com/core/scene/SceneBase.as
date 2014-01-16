@@ -67,21 +67,13 @@ package com.core.scene
     public function get disposed():Boolean { return _disposed; }
     public function get starlingView():Sprite { return _starlingView; }
 
-    public function get width():int { return _width; }
-    public function get height():int { return _height; }
-
     protected function get buttons():Array { return _buttons; }
 
     //
     // Public methods.
     //
 
-    public function resize(w:int, h:int):void {
-      _starlingView.width = w;
-      _starlingView.height = h;
-
-      _width = w;
-      _height = h;
+    public function resize(w:Number, h:Number):void {
     }
 
     public function setScene():void {
@@ -174,8 +166,8 @@ package com.core.scene
     private function setDimensions(obj:*, dimensions:Object):void {
       obj.width = dimensions.width;
       obj.height = dimensions.height;
-      obj.x = dimensions.x;
-      obj.y = dimensions.y;
+      obj.x = dimensions.x ? dimensions.x : 0;
+      obj.y = dimensions.y ? dimensions.y : 0;
     }
 
     private function addUIListener(target:starling.events.EventDispatcher, type:String, listener:Function):void {
@@ -203,8 +195,6 @@ package com.core.scene
     }
 
     private function setSize():void {
-      _starlingView.width = _starlingView.parent.width;
-      _starlingView.height = _starlingView.parent.height;
     }
 
     private function findOrCreateLayer(index:int):Layer {

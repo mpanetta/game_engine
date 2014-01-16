@@ -6,6 +6,7 @@ package com.core.scene
   import flash.events.EventDispatcher;
 
   import starling.display.Sprite;
+  import starling.events.Event;
   import starling.events.Touch;
   import starling.events.TouchEvent;
   import starling.events.TouchPhase;
@@ -90,16 +91,22 @@ package com.core.scene
 
     }
 
+    protected function handleAddedToStage():void {
+
+    }
+
     //
     // Private methods.
     //
 
     private function register():void {
       addEventListener(TouchEvent.TOUCH, touch);
+      addEventListener(Event.ADDED_TO_STAGE, addedToStage);
     }
 
     private function unregister():void {
       removeEventListener(TouchEvent.TOUCH, touch);
+      removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
     }
 
     private function checkDispose():void {
@@ -122,6 +129,10 @@ package com.core.scene
       handleMoved(event.getTouch(this, TouchPhase.MOVED));
       handleStationary(event.getTouch(this, TouchPhase.STATIONARY));
       handleEnded(event.getTouch(this, TouchPhase.ENDED));
+    }
+
+    private function addedToStage(event:Event):void {
+      handleAddedToStage();
     }
   }
 }

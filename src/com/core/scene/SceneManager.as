@@ -3,6 +3,8 @@ package com.core.scene
   import com.core.messageBus.MessageBus;
   import com.engine.RootDisplay;
 
+  import flash.display.Stage;
+  import flash.events.Event;
   import flash.events.EventDispatcher;
   import flash.utils.getDefinitionByName;
 
@@ -45,9 +47,12 @@ package com.core.scene
     // Getters and setters.
     //
 
-    public function get width():int { return _rootDisplay.stage.stageWidth; }
-    public function get height():int { return _rootDisplay.stage.stageHeight; }
+    private function get stage():Stage { return _rootDisplay.stage; }
+
+    public function get width():int { return stage.stageWidth; }
+    public function get height():int { return stage.stageHeight; }
     public function get currentScene():IScene { return _scene; }
+
 
     //
     // Public methods.
@@ -74,6 +79,8 @@ package com.core.scene
       MessageBus.instance.add(this, SceneMessage.SCENE_CHANGE_FINISH);
 
       MessageBus.instance.addEventListener(SceneMessage.REQUEST_LAST_SCENE, messageBus_requestLastScene);
+
+      stage.addEventListener(Event.RESIZE, stage_resize);
     }
 
     private function unregister():void {
@@ -81,6 +88,14 @@ package com.core.scene
       MessageBus.instance.remove(this, SceneMessage.SCENE_CHANGE_FINISH);
 
       MessageBus.instance.removeEventListener(SceneMessage.REQUEST_LAST_SCENE, messageBus_requestLastScene);
+
+      stage.addEventListener(Event.RESIZE, stage_resize);
+    }
+
+    private function resize(width:Number, height:Number):void {
+      if(!_scene) return;
+
+      _scene.resize(width, height);
     }
 
     private function pushSceneRequest(controller:IController, opts:Object):void {
@@ -135,6 +150,10 @@ package com.core.scene
     //
     // Event handlers.
     //
+
+    private function stage_resize(event:Event):void {
+      resize(event.target.stageWidth, event.target.stageHeight);
+    }
 
     private function messageBus_requestLastScene(message:SceneMessage):void {
       popSceneRequest();

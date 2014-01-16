@@ -11,10 +11,7 @@ package com.core.scene
     function get disposed():Boolean;
     function get starlingView():Sprite;
 
-    function get width():int;
-    function get height():int;
-
-    function resize(w:int, h:int):void;
+    function resize(w:Number, h:Number):void;
     function setScene():void;
   }
 }

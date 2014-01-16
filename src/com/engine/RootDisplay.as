@@ -4,7 +4,10 @@ package com.engine
   import flash.display.StageAlign;
   import flash.display.StageScaleMode;
   import flash.events.Event;
-  import flash.geom.Rectangle;
+  import flash.events.TimerEvent;
+  import flash.utils.Timer;
+
+  import feathers.system.DeviceCapabilities;
 
   import starling.core.Starling;
 
@@ -24,6 +27,7 @@ package com.engine
     private var _opts:Object;
     private var _flashDisplay:Sprite;
     private var _starlingDisplay:StarlingDisplay;
+    private var _timer:Timer;
 
     //
     // Constructors.
@@ -60,11 +64,11 @@ package com.engine
     }
 
     private function setup():void {
+      stage.addEventListener(Event.RESIZE, stage_resize);
       setupStage();
       Starling.handleLostContext = true;
 
-      var viewPort:Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
-      var starling:Starling = new Starling(StarlingDisplay, stage, viewPort, null, _opts.render_mode);
+      var starling:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode);
       (starling as Starling).antiAliasing = _opts.antialiasing;
       (starling as Starling).start();
 
@@ -75,6 +79,12 @@ package com.engine
       stage.align = StageAlign.TOP_LEFT;
       stage.scaleMode = StageScaleMode.NO_SCALE;
       stage.color = 0;
+
+      if(_opts.appWidth && _opts.appHeight) {
+        DeviceCapabilities.dpi = 150;
+        DeviceCapabilities.screenPixelWidth = _opts.appWidth;
+        DeviceCapabilities.screenPixelHeight = _opts.appHeight;
+      }
     }
 
     private function dispatchInitialize():void {
@@ -82,6 +92,28 @@ package com.engine
       _starlingDisplay.allowResize = true;
 
       dispatchEvent(new GameMessage(GameMessage.ROOT_DISPLAY_INITIALIZED));
+    }
+
+    private function resize():void {
+      if(!_starlingDisplay) return;
+
+      stopTimer();
+      _starlingDisplay.resize(stage.stageWidth, stage.stageHeight);
+    }
+
+    private function startTimer():void {
+      if(_timer)
+        stopTimer();
+
+      _timer = new Timer(300, 1);
+      _timer.addEventListener(TimerEvent.TIMER, timer_timer);
+      _timer.start();
+    }
+
+    private function stopTimer():void {
+      _timer.stop();
+      _timer.removeEventListener(TimerEvent.TIMER, timer_timer);
+      _timer = null;
     }
 
     //
@@ -94,10 +126,18 @@ package com.engine
       setup();
     }
 
+    private function stage_resize(event:Event):void {
+      startTimer();
+    }
+
     private function starlingDisplay_init(event:Event):void {
       StarlingDisplay.removeEventListener(Event.INIT, starlingDisplay_init);
 
       dispatchInitialize();
+    }
+
+    private function timer_timer(event:TimerEvent):void {
+      resize();
     }
   }
 }

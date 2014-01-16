@@ -6,10 +6,7 @@ package com.engine
 
   import flash.events.EventDispatcher;
 
-  import feathers.themes.MetalWorksMobileTheme;
-
   import starling.core.Starling;
-  import starling.display.Stage;
 
   public class Engine extends EventDispatcher
   {
@@ -28,7 +25,6 @@ package com.engine
     private var _options:Object;
     private var _rootDisplay:RootDisplay;
     private var _sceneManager:SceneManager;
-    private var _theme:MetalWorksMobileTheme;
 
     //
     // Constructors.
@@ -62,6 +58,8 @@ package com.engine
     public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
     public function get width():int { return sceneManager.width; }
     public function get height():int { return sceneManager.height; }
+    public function get appWidth():int { return _options.appWidth; }
+    public function get appHeight():int { return _options.appHeight; }
 
     //
     // Public methods.
@@ -109,7 +107,7 @@ package com.engine
     }
 
     private function startFeathers():void {
-      _theme = new MetalWorksMobileTheme(_rootDisplay.stage as Stage);
+//      _theme = new MetalWorksMobileTheme(_rootDisplay.stage as Stage);
     }
 
     //

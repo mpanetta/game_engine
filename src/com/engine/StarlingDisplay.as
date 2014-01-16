@@ -4,12 +4,15 @@ package com.engine
   import com.core.scene.IScene;
 
   import flash.events.EventDispatcher;
+  import flash.geom.Point;
   import flash.geom.Rectangle;
 
   import starling.core.Starling;
   import starling.display.Sprite;
   import starling.events.Event;
   import starling.events.ResizeEvent;
+  import starling.utils.RectangleUtil;
+  import starling.utils.ScaleMode;
 
   public class StarlingDisplay extends Sprite
   {
@@ -27,6 +30,7 @@ package com.engine
     private var _initialized:Boolean = false;
     private var _sceneLayer:Sprite;
     private var _hudLayer:Sprite;
+    private var _targetResolution:Point;
 
     //
     // Constructors.
@@ -82,22 +86,18 @@ package com.engine
 
       _initialized = true;
 
-      stage.addEventListener(ResizeEvent.RESIZE, stage_resize);
-
       createLayers();
       resize(stage.stageWidth, stage.stageHeight);
+
       dispatchInitComplete();
     }
 
-    private function resize(width:int, height:int):void {
-      if(allowResize)
-        Starling.current.viewPort = new Rectangle(0, 0, width, height);
+    public function resize(newWidth:int, newHeight:int):void {
+      if(!allowResize) return;
 
-      stage.stageWidth = width;
-      stage.stageHeight = height;
-
-      _sceneLayer.width = width;
-      _sceneLayer.height = height;
+      stage.stageWidth = newWidth;
+      stage.stageHeight = newHeight;
+      Starling.current.viewPort = new Rectangle(0, 0, newWidth, newHeight);
     }
 
     private function createLayers():void {
@@ -120,10 +120,6 @@ package com.engine
       removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
 
       initialize();
-    }
-
-    private function stage_resize(event:ResizeEvent):void {
-      resize(event.width, event.height);
     }
   }
 }
