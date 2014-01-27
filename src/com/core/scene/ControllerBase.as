@@ -113,7 +113,10 @@ package com.core.scene
       for each(var type:String in eventTypes) {
         listenerName = targetName + '_' + methodForEvent(type);
 
-        target.removeEventListener((messageClass as Object)[type], (this as Object)[listenerName]);
+        try {
+          target.removeEventListener((messageClass as Object)[type], (this as Object)[listenerName]);
+        } catch(error:Error) {
+        }
       }
     }
 
