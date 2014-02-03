@@ -1,7 +1,6 @@
 package com.core.scene
 {
   import com.core.messageBus.MessageBus;
-  import com.engine.RootDisplay;
 
   import flash.display.Stage;
   import flash.events.Event;
@@ -120,7 +119,7 @@ package com.core.scene
     }
 
     private function removeCurrentScene():void {
-      _rootDisplay.starlingDisplay.removeScene(_scene);
+      _rootDisplay.removeScene(_scene);
 
       _scene.removeEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish);
       _scene.dispose();
@@ -144,7 +143,7 @@ package com.core.scene
     private function addSceneToStage():void {
       _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish, false, 0, true);
 
-      _rootDisplay.starlingDisplay.addScene(_scene);
+      _rootDisplay.addScene(_scene);
     }
 
     //

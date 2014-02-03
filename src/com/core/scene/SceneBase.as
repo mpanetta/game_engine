@@ -12,7 +12,6 @@ package com.core.scene
   import feathers.controls.TextInput;
 
   import starling.display.DisplayObject;
-  import starling.display.Sprite;
   import starling.events.Event;
 
   use namespace scene_message;
@@ -31,7 +30,8 @@ package com.core.scene
 
     private var _disposed:Boolean = false;
     private var _data:Object;
-    private var _starlingView:Sprite = new Sprite();
+    private var _starlingContainer:StarlingContainer = new StarlingContainer();
+    private var _flashContainer:FlashContainer = new FlashContainer();
     private var _listeners:Hash = new Hash();
     private var _buttons:Array = [];
     private var _width:int;
@@ -65,7 +65,8 @@ package com.core.scene
     //
 
     public function get disposed():Boolean { return _disposed; }
-    public function get starlingView():Sprite { return _starlingView; }
+    public function get starlingContainer():StarlingContainer { return _starlingContainer; }
+    public function get flashContainer():FlashContainer { return _flashContainer; }
 
     protected function get buttons():Array { return _buttons; }
 
@@ -119,7 +120,7 @@ package com.core.scene
     }
 
     protected function addChild(child:DisplayObject, index:int=1):DisplayObject {
-      var layer:Layer = findOrCreateLayer(index);
+      var layer:StarlingLayer = findOrCreateLayer(index);
 
       return layer.addChild(child);
     }
@@ -154,11 +155,11 @@ package com.core.scene
     //
 
     private function register():void {
-      _starlingView.addEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
+      _starlingContainer.addEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
     }
 
     private function unregister():void {
-      _starlingView.removeEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
+      _starlingContainer.removeEventListener(Event.ADDED_TO_STAGE, starlingView_addedToStage);
     }
 
     private function disposeCheck():void {
@@ -200,8 +201,8 @@ package com.core.scene
     private function setSize():void {
     }
 
-    private function findOrCreateLayer(index:int):Layer {
-      var layer:Layer = _layers[index];
+    private function findOrCreateLayer(index:int):StarlingLayer {
+      var layer:StarlingLayer = _layers[index];
       if(!layer) {
         layer = createLayer(index);
         _layers[index] = layer;
@@ -210,10 +211,10 @@ package com.core.scene
       return layer;
     }
 
-    private function createLayer(index:int):Layer {
-      var layer:Layer = new Layer(index);
-      _starlingView.addChild(layer);
-      _starlingView.sortChildren(function(a:Layer, b:Layer):Boolean { return a.index > b.index; });
+    private function createLayer(index:int):StarlingLayer {
+      var layer:StarlingLayer = new StarlingLayer(index);
+      _starlingContainer.addChild(layer);
+      _starlingContainer.sortChildren(function(a:StarlingLayer, b:StarlingLayer):Boolean { return a.index > b.index; });
 
       return layer;
     }

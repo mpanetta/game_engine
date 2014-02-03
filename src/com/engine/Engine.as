@@ -7,6 +7,7 @@ package com.engine
   import flash.events.EventDispatcher;
 
   import starling.core.Starling;
+  import com.core.scene.RootDisplay;
 
   public class Engine extends EventDispatcher
   {
@@ -52,7 +53,7 @@ package com.engine
     // Getters and setters.
     //
 
-    public static function sceneManager():SceneManager { return _instance.sceneManager; }
+    public static function get sceneManager():SceneManager { return _instance.sceneManager; }
 
     public function get sceneManager():SceneManager { return _sceneManager; }
     public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
@@ -93,7 +94,6 @@ package com.engine
     private function initializeEngine():void {
       createSceneGraph();
       setFramerate();
-      startFeathers();
 
       dispatchEvent(new GameMessage(GameMessage.ENGINE_INITIALIZED));
     }
@@ -104,10 +104,6 @@ package com.engine
 
     private function setFramerate():void {
       _options.framerate = _options.hasOwnProperty('framerate') ? _options.framerate : DEFAULT_FRAMERATE;
-    }
-
-    private function startFeathers():void {
-//      _theme = new MetalWorksMobileTheme(_rootDisplay.stage as Stage);
     }
 
     //
