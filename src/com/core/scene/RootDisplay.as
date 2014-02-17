@@ -5,6 +5,7 @@ package com.core.scene
 
   import flash.display.Sprite;
   import flash.display.StageAlign;
+  import flash.display.StageQuality;
   import flash.display.StageScaleMode;
   import flash.events.Event;
   import flash.events.TimerEvent;
@@ -21,7 +22,7 @@ package com.core.scene
     //
 
     private static const DEFAULT_RENDER_MODE:String = "auto";
-    private static const DEFAULT_ANTIALIAS_SETTING:int = 1;
+    private static const DEFAULT_ANTIALIAS_SETTING:int = 16;
 
     //
     // Instance variables.
@@ -92,6 +93,7 @@ package com.core.scene
     private function setupStage():void {
       stage.align = StageAlign.TOP_LEFT;
       stage.scaleMode = StageScaleMode.NO_SCALE;
+      stage.quality = StageQuality.HIGH;
       stage.color = 0;
 
       if(_opts.appWidth && _opts.appHeight) {
