@@ -63,6 +63,7 @@ package com.core.scene
     public function get className():String { return getQualifiedClassName(this); }
 
     protected function get scene():IScene { return _scene; }
+    protected function get data():Object { return _data; }
 
     //
     // Public methods.

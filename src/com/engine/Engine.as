@@ -2,12 +2,13 @@ package com.engine
 {
   import com.core.messageBus.MessageBus;
   import com.core.net.NetManager;
+  import com.core.scene.RootDisplay;
   import com.core.scene.SceneManager;
+  import com.sound.SoundManager;
 
   import flash.events.EventDispatcher;
 
   import starling.core.Starling;
-  import com.core.scene.RootDisplay;
 
   public class Engine extends EventDispatcher
   {
@@ -26,6 +27,7 @@ package com.engine
     private var _options:Object;
     private var _rootDisplay:RootDisplay;
     private var _sceneManager:SceneManager;
+    private var _assets:*;
 
     //
     // Constructors.
@@ -33,6 +35,7 @@ package com.engine
 
     public function Engine(sb:SingletonBlocker, options:Object) {
       _options = options;
+      SoundManager.initialize(options);
     }
 
     public static function initialize(options:Object):void {
@@ -61,6 +64,7 @@ package com.engine
     public function get height():int { return sceneManager.height; }
     public function get appWidth():int { return _options.appWidth; }
     public function get appHeight():int { return _options.appHeight; }
+    public function get assetManager():* { return _assets; }
 
     //
     // Public methods.
@@ -68,6 +72,14 @@ package com.engine
 
     public function startGame():void {
       startEngine(_options);
+    }
+
+    public function registerAssets(assets:Object):void {
+      _assets = assets;
+    }
+
+    public static function getAsset(name:String):* {
+      return _instance.assetManager[name];
     }
 
     //
