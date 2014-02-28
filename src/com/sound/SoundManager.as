@@ -1,6 +1,5 @@
 package com.sound
 {
-  import com.engine.Engine;
   import com.core.dataStructures.Hash;
 
   import flash.media.SoundTransform;

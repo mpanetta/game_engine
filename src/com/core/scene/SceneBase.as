@@ -3,6 +3,7 @@ package com.core.scene
   import com.core.dataStructures.Hash;
   import com.core.error.ErrorBase;
   import com.core.namespaces.scene_message;
+  import com.engine.Engine;
   import com.util.eventTypesFor;
   import com.util.methodForEvent;
 
@@ -69,6 +70,8 @@ package com.core.scene
     public function get flashContainer():FlashContainer { return _flashContainer; }
 
     protected function get buttons():Array { return _buttons; }
+    protected function get appWidth():Number { return Engine.instance.appWidth; }
+    protected function get appHeight():Number { return Engine.instance.appHeight; }
 
     //
     // Public methods.
