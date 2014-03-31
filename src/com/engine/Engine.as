@@ -16,8 +16,6 @@ package com.engine
     // Constants.
     //
 
-    private static const DEFAULT_FRAMERATE:int = 60;
-
     //
     // Instance variables.
     //
@@ -65,6 +63,7 @@ package com.engine
     public function get appWidth():int { return _options.appWidth; }
     public function get appHeight():int { return _options.appHeight; }
     public function get assetManager():* { return _assets; }
+    public function get platformString():String { return _options.platformString; }
 
     //
     // Public methods.
@@ -105,17 +104,12 @@ package com.engine
 
     private function initializeEngine():void {
       createSceneGraph();
-      setFramerate();
 
       dispatchEvent(new GameMessage(GameMessage.ENGINE_INITIALIZED));
     }
 
     private function createSceneGraph():void {
       _sceneManager = new SceneManager(_rootDisplay);
-    }
-
-    private function setFramerate():void {
-      _options.framerate = _options.hasOwnProperty('framerate') ? _options.framerate : DEFAULT_FRAMERATE;
     }
 
     //

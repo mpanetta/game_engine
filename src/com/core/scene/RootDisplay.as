@@ -23,6 +23,8 @@ package com.core.scene
 
     private static const DEFAULT_RENDER_MODE:String = "auto";
     private static const DEFAULT_ANTIALIAS_SETTING:int = 16;
+    private static const DEFAULT_FRAME_RATE:int = 24;
+    private static const DEFAULT_STAT:Boolean = false;
 
     //
     // Instance variables.
@@ -75,25 +77,28 @@ package com.core.scene
 
       if(!_opts.hasOwnProperty('render_mode')) _opts.render_mode = DEFAULT_RENDER_MODE;
       if(!_opts.hasOwnProperty('antialiasing')) _opts.antialiasing = DEFAULT_ANTIALIAS_SETTING;
+      if(!_opts.hasOwnProperty('frameRate')) _opts.frameRate = DEFAULT_FRAME_RATE;
+      if(!_opts.hasOwnProperty('stats')) _opts.stats = DEFAULT_STAT;
     }
 
     private function setup():void {
       stage.addEventListener(Event.RESIZE, stage_resize);
       setupStage();
       Starling.handleLostContext = true;
-
-      var starling:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode);
-      (starling as Starling).antiAliasing = _opts.antialiasing;
-      (starling as Starling).start();
+      var star:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode);
+      star.antiAliasing = _opts.antialiasing;
+      star.start();
+      star.showStats = _opts.stats;
 
       _flashDisplay = new FlashDisplay();
-      (starling as Starling).nativeOverlay.addChild(_flashDisplay);
+      star.nativeOverlay.addChild(_flashDisplay);
     }
 
     private function setupStage():void {
       stage.align = StageAlign.TOP_LEFT;
       stage.scaleMode = StageScaleMode.NO_SCALE;
       stage.quality = StageQuality.HIGH;
+      stage.frameRate = _opts.frameRate;
       stage.color = 0;
 
       if(_opts.appWidth && _opts.appHeight) {

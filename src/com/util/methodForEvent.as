@@ -4,9 +4,6 @@ package com.util {
     var tokens:Array = lower.split(/_/);
     var first:String = tokens[0];
 
-    return first + capitalize(tokens.slice(1).join("")).split(/ /).join("");
+    return first + capitalize(tokens.slice(1).join("_")).split(/ /).join("");
   }
 }
-
-
-
