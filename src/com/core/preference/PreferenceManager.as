@@ -1,8 +1,12 @@
 package com.core.preference
 {
+  import com.core.dataStructures.Hash;
+  import com.core.dataStructures.Set;
   import com.core.error.ErrorBase;
 
+  import flash.events.NetStatusEvent;
   import flash.net.SharedObject;
+  import flash.net.SharedObjectFlushStatus;
 
   public class PreferenceManager
   {
@@ -16,6 +20,8 @@ package com.core.preference
 
     private static var _instance:PreferenceManager;
     private var _opts:Object;
+    private var _settings:Hash = new Hash();
+    private var _objects:Set = new Set();
 
     //
     // Constructors.
@@ -61,6 +67,32 @@ package com.core.preference
       var object:SharedObject = SharedObject.getLocal(key, _opts.localPath);
 
       object.data.value = value;
+
+      try {
+        var result:String = object.flush();
+      } catch(error:Error) {
+        return;
+      }
+
+      if(result) {
+        switch(result) {
+          case SharedObjectFlushStatus.PENDING:
+            _objects.add(object);
+            object.addEventListener(NetStatusEvent.NET_STATUS, function(event:NetStatusEvent):void {
+              object.removeEventListener(NetStatusEvent.NET_STATUS, arguments.callee);
+              if(event.info.code == 'SharedObject.Flush.Failed')
+
+              _objects.remove(object);
+            });
+            break;
+          case SharedObjectFlushStatus.FLUSHED:
+            break;
+          default:
+            throw new Error("Unknown flush status");
+            break;
+        }
+      } else {
+      }
     }
 
     //

@@ -31,6 +31,7 @@ package com.sound
     private var _bkgdTransform:SoundTransform;
     private var _fxLastVolume:Number = DEFAULT_FX_VOLUME;
     private var _bkgdLastVolume:Number = DEFAULT_BKGD_VOLUME;
+    private var _mute:Boolean = false;
 
     //
     // Constructors.
@@ -89,17 +90,22 @@ package com.sound
       applyEffectsVolume();
     }
     public function get fxVolume():Number { return _fxTransform.volume; }
+    public function get muted():Boolean { return _mute; }
 
     //
     // Public methods.
     //
 
     public function mute():void {
+      _mute = true;
+
       muteEffects();
       muteBackground();
     }
 
     public function unmute():void {
+      _mute = false;
+
       unmuteEffects();
       unmuteBackground();
     }
