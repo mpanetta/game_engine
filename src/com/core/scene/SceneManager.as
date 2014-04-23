@@ -46,12 +46,10 @@ package com.core.scene
     // Getters and setters.
     //
 
-    private function get stage():Stage { return _rootDisplay.stage; }
-
+    public function get stage():Stage { return _rootDisplay.stage; }
     public function get width():int { return stage.stageWidth; }
     public function get height():int { return stage.stageHeight; }
     public function get currentScene():IScene { return _scene; }
-
 
     //
     // Public methods.

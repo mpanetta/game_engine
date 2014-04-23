@@ -44,7 +44,7 @@ package com.core.scene
     //
 
     public function SceneBase(data:Object) {
-      _data:Object
+      _data = data;
       _count++;
 
       register();
@@ -72,6 +72,7 @@ package com.core.scene
     protected function get buttons():Array { return _buttons; }
     protected function get appWidth():Number { return Engine.instance.appWidth; }
     protected function get appHeight():Number { return Engine.instance.appHeight; }
+    protected function get data():Object { return _data; }
 
     //
     // Public methods.
