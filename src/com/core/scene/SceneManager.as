@@ -1,7 +1,9 @@
 package com.core.scene
 {
   import com.core.messageBus.MessageBus;
+  import com.engine.Engine;
 
+  import flash.display.MovieClip;
   import flash.display.Stage;
   import flash.events.Event;
   import flash.events.EventDispatcher;
@@ -25,6 +27,7 @@ package com.core.scene
     private var _hud:IHud;
     private var _changing:Boolean;
     private var _scenes:Vector.<Object> = new Vector.<Object>;
+    private var _loading:MovieClip;
 
     //
     // Constructors.
@@ -34,6 +37,7 @@ package com.core.scene
       _rootDisplay = rootDisplay;
 
       register();
+      showLoadingScreen();
     }
 
     public function dispose():void {
@@ -89,10 +93,10 @@ package com.core.scene
       stage.addEventListener(Event.RESIZE, stage_resize);
     }
 
-    private function resize(width:Number, height:Number):void {
-      if(!_scene) return;
+    private function resize(w:Number, h:Number):void {
+      if(_scene) _scene.resize(w, h);
 
-      _scene.resize(width, height);
+      scaleLoading(w, h);
     }
 
     private function pushSceneRequest(controller:IController, opts:Object):void {
@@ -141,7 +145,34 @@ package com.core.scene
     private function addSceneToStage():void {
       _scene.addEventListener(SceneMessage.SCENE_CHANGE_FINISH, scene_sceneChangeFinish, false, 0, true);
 
+      hideLoadingScreen();
       _rootDisplay.addScene(_scene);
+    }
+
+    private function showLoadingScreen():void {
+      _loading = Engine.instance.assetManager.loadingScreen;
+      stage.addChild(_loading);
+
+      scaleLoading(width, height);
+    }
+
+    private function hideLoadingScreen():void {
+      if(!_loading) return;
+
+      stage.removeChild(_loading);
+
+      _loading = null;
+    }
+
+    private function scaleLoading(cw:Number, ch:Number):void {
+      if(!_loading) return;
+
+      var p:Number = ch / cw < _loading.height / _loading.width ? cw / _loading.width : ch / _loading.height;
+
+      _loading.width *= p;
+      _loading.height *= p;
+      _loading.x = (cw - _loading.width) / 2 + _loading.width / 2;
+      _loading.y = (ch - _loading.height) / 2 + _loading.height / 2;
     }
 
     //

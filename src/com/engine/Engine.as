@@ -33,6 +33,8 @@ package com.engine
 
     public function Engine(sb:SingletonBlocker, options:Object) {
       _options = options;
+      if(_options.assetManager) _assets = _options.assetManager;
+
       SoundManager.initialize(options);
     }
 
@@ -55,6 +57,7 @@ package com.engine
     //
 
     public static function get sceneManager():SceneManager { return _instance.sceneManager; }
+    public static function get options():Object { return _instance.options; }
 
     public function get sceneManager():SceneManager { return _sceneManager; }
     public function get contentScaleFactor():Number { return Starling.contentScaleFactor; }
@@ -64,6 +67,7 @@ package com.engine
     public function get appHeight():int { return _options.appHeight; }
     public function get assetManager():* { return _assets; }
     public function get platformString():String { return _options.platformString; }
+    public function get options():Object { return _options; }
 
     //
     // Public methods.
