@@ -70,8 +70,8 @@ package com.core.scene
 
       if(_scene) {
         previous = true;
-        removeCurrentScene();
         showLoadingScreen();
+        removeCurrentScene();
       }
 
       if(Engine.options.TEST_SLOW_CHANGE && previous)
