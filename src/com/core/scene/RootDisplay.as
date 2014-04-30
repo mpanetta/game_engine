@@ -3,6 +3,7 @@ package com.core.scene
 
   import com.engine.GameMessage;
 
+  import flash.display.Bitmap;
   import flash.display.Sprite;
   import flash.display.StageAlign;
   import flash.display.StageQuality;
@@ -66,6 +67,10 @@ package com.core.scene
     public function removeScene(scene:IScene):void {
       _starlingDisplay.removeScene(scene);
       _flashDisplay.removeScene(scene);
+    }
+
+    public function setBackground(bitmap:Bitmap):void {
+
     }
 
     //

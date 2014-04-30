@@ -11,6 +11,8 @@ package com.core.scene
 
   import avmplus.getQualifiedClassName;
 
+  import starling.core.Starling;
+
   public class SceneManager extends EventDispatcher
   {
     //
@@ -64,11 +66,18 @@ package com.core.scene
       _changing = true;
 
       pushSceneRequest(controller, opts);
+      var previous:Boolean = false;
 
-      if(_scene)
+      if(_scene) {
+        previous = true;
         removeCurrentScene();
+        showLoadingScreen();
+      }
 
-      addScene(controller, opts);
+      if(Engine.options.TEST_SLOW_CHANGE && previous)
+        Starling.juggler.delayCall(function():void { addScene(controller, opts) }, 2);
+      else
+        addScene(controller, opts);
     }
 
     //
@@ -82,6 +91,7 @@ package com.core.scene
       MessageBus.instance.addEventListener(SceneMessage.REQUEST_LAST_SCENE, messageBus_requestLastScene);
 
       stage.addEventListener(Event.RESIZE, stage_resize);
+      stage.addEventListener(Event.ADDED_TO_STAGE, stage_addedToStage);
     }
 
     private function unregister():void {
@@ -150,7 +160,7 @@ package com.core.scene
     }
 
     private function showLoadingScreen():void {
-      _loading = Engine.instance.assetManager.loadingScreen;
+      _loading = Engine.instance.assetManager.loadingTrans;
       stage.addChild(_loading);
 
       scaleLoading(width, height);
@@ -167,12 +177,14 @@ package com.core.scene
     private function scaleLoading(cw:Number, ch:Number):void {
       if(!_loading) return;
 
-      var p:Number = ch / cw < _loading.height / _loading.width ? cw / _loading.width : ch / _loading.height;
+      _loading.x = (cw - _loading.width) / 2 + 194.75;
+      _loading.y = (ch - _loading.height) / 2 + 43.55;
+    }
 
-      _loading.width *= p;
-      _loading.height *= p;
-      _loading.x = (cw - _loading.width) / 2 + _loading.width / 2;
-      _loading.y = (ch - _loading.height) / 2 + _loading.height / 2;
+    private function bringLoadingToFront():void {
+      if(!_loading || !_changing) return;
+
+      stage.addChild(_loading);
     }
 
     //
@@ -181,6 +193,10 @@ package com.core.scene
 
     private function stage_resize(event:Event):void {
       resize(event.target.stageWidth, event.target.stageHeight);
+    }
+
+    private function stage_addedToStage(event:Event):void {
+      bringLoadingToFront();
     }
 
     private function messageBus_requestLastScene(message:SceneMessage):void {

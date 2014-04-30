@@ -154,6 +154,10 @@ package com.core.scene
       }
     }
 
+    protected function handleStarlingStage():void {
+
+    }
+
     //
     // Private methods.
     //
@@ -223,13 +227,13 @@ package com.core.scene
       return layer;
     }
 
-
     //
     // Event handlers.
     //
 
     private function starlingView_addedToStage(event:Event):void {
       setSize();
+      handleStarlingStage();
     }
   }
 }

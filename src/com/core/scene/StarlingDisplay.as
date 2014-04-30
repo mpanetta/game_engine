@@ -1,15 +1,21 @@
 package com.core.scene
 {
 
+  import com.engine.Engine;
   import com.engine.EngineError;
+  import com.util.scaleToFit;
 
+  import flash.display.Bitmap;
   import flash.events.EventDispatcher;
   import flash.geom.Point;
   import flash.geom.Rectangle;
 
   import starling.core.Starling;
+  import starling.display.BlendMode;
+  import starling.display.Image;
   import starling.display.Sprite;
   import starling.events.Event;
+  import starling.textures.Texture;
 
   public class StarlingDisplay extends Sprite
   {
@@ -27,7 +33,9 @@ package com.core.scene
     private var _initialized:Boolean = false;
     private var _sceneLayer:Sprite;
     private var _hudLayer:Sprite;
+    private var _backgroundLayer:Sprite;
     private var _targetResolution:Point;
+    private var _backgroundImage:Image;
 
     //
     // Constructors.
@@ -84,6 +92,7 @@ package com.core.scene
       _initialized = true;
 
       createLayers();
+      addBackground(Engine.options.backgroundImage);
       resize(stage.stageWidth, stage.stageHeight);
 
       dispatchInitComplete();
@@ -95,14 +104,27 @@ package com.core.scene
       stage.stageWidth = newWidth;
       stage.stageHeight = newHeight;
       Starling.current.viewPort = new Rectangle(0, 0, newWidth, newHeight);
+
+      if(_backgroundImage)
+        scaleToFit(_backgroundImage, newWidth, newHeight);
     }
 
     private function createLayers():void {
+      _backgroundLayer = new Sprite();
       _sceneLayer = new Sprite();
       _hudLayer = new Sprite();
 
+      addChild(_backgroundLayer);
       addChild(_sceneLayer);
       addChild(_hudLayer);
+    }
+
+    private function addBackground(bitmap:Bitmap):void {
+      if(!bitmap) return;
+
+      _backgroundImage = new Image(Texture.fromBitmap(bitmap));
+      _backgroundLayer.addChild(_backgroundImage);
+      _backgroundImage.blendMode = BlendMode.NONE;
     }
 
     private function dispatchInitComplete():void {
