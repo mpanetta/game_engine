@@ -39,7 +39,6 @@ package com.core.scene
       _rootDisplay = rootDisplay;
 
       register();
-      showLoadingScreen();
     }
 
     public function dispose():void {
@@ -160,6 +159,8 @@ package com.core.scene
     }
 
     private function showLoadingScreen():void {
+      if(_loading) hideLoadingScreen();
+
       _loading = Engine.instance.assetManager.loadingTrans;
       stage.addChild(_loading);
 

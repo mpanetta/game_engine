@@ -23,7 +23,7 @@ package com.core.scene
     //
 
     private static const DEFAULT_RENDER_MODE:String = "auto";
-    private static const DEFAULT_ANTIALIAS_SETTING:int = 16;
+    private static const DEFAULT_ANTIALIAS_SETTING:int = 4;
     private static const DEFAULT_FRAME_RATE:int = 24;
     private static const DEFAULT_STAT:Boolean = false;
 
@@ -90,8 +90,8 @@ package com.core.scene
       stage.addEventListener(Event.RESIZE, stage_resize);
       setupStage();
       Starling.handleLostContext = true;
-      var star:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode);
-      star.antiAliasing = _opts.antialiasing;
+      var star:Starling = new Starling(StarlingDisplay, stage, null, null, _opts.render_mode, "baseline");
+      star.antiAliasing = 4;//_opts.antialiasing;
       star.start();
       star.showStats = _opts.stats;
 
@@ -106,11 +106,11 @@ package com.core.scene
       stage.frameRate = _opts.frameRate;
       stage.color = 0;
 
-      if(_opts.appWidth && _opts.appHeight) {
-        DeviceCapabilities.dpi = 150;
-        DeviceCapabilities.screenPixelWidth = _opts.appWidth;
-        DeviceCapabilities.screenPixelHeight = _opts.appHeight;
-      }
+//      if(_opts.appWidth && _opts.appHeight) {
+//        DeviceCapabilities.dpi = 150;
+//        DeviceCapabilities.screenPixelWidth = _opts.appWidth;
+//        DeviceCapabilities.screenPixelHeight = _opts.appHeight;
+//      }
     }
 
     private function dispatchInitialize():void {
@@ -131,7 +131,7 @@ package com.core.scene
       if(_timer)
         stopTimer();
 
-      _timer = new Timer(300, 1);
+      _timer = new Timer(100, 1);
       _timer.addEventListener(TimerEvent.TIMER, timer_timer);
       _timer.start();
     }

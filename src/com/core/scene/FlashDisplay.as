@@ -33,7 +33,8 @@ package com.core.scene
     }
 
     public function removeScene(scene:IScene):void {
-      removeChild(scene.flashContainer);
+      if(contains(scene.flashContainer))
+        removeChild(scene.flashContainer);
     }
 
     //

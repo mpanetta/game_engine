@@ -191,11 +191,15 @@ package com.core.scene
     }
 
     private function clearLayers():void {
+      if(!_layers) return;
+
       _layers.clear();
       _layers = null;
     }
 
     private function clearUIListeners():void {
+      if(!_listeners) return;
+
       for(var target:starling.events.EventDispatcher in _listeners) {
         for each(var listener:Object in _listeners[target]) {
           target.removeEventListener(listener.type, listener.listener);
