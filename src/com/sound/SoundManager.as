@@ -164,11 +164,11 @@ package com.sound
     }
 
     public function unmuteEffects():void {
-      fxVolume = _fxLastVolume;
+      fxVolume = _fxLastVolume == 0 ? DEFAULT_FX_VOLUME : _fxLastVolume;
     }
 
     public function unmuteBackground():void {
-      backgroundVolume = _bkgdLastVolume;
+      backgroundVolume = _bkgdLastVolume == 0 ? DEFAULT_BKGD_VOLUME : _bkgdLastVolume;
     }
 
     public function playMusic(track:String, options:Object=null):void {

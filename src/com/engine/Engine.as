@@ -7,6 +7,7 @@ package com.engine
   import com.sound.SoundManager;
 
   import flash.events.EventDispatcher;
+  import flash.system.Capabilities;
 
   import starling.core.Starling;
 
@@ -68,6 +69,7 @@ package com.engine
     public function get assetManager():* { return _assets; }
     public function get platformString():String { return _options.platformString; }
     public function get options():Object { return _options; }
+    public function get playerType():String { return Capabilities.playerType; }
 
     //
     // Public methods.
